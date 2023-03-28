@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimaryDark"
+                android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight"
+                app:title="ChatGPT"
+                app:menu="@menu/top_app_bar"
+                app:navigationIcon="@drawable/ic_chat" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/rv_msg"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_weight="1"/>-->
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tvMsg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="..."
+                android:textColor="?attr/colorPrimary"
+                android:textSize="26sp"/>
+
+        </ScrollView>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_msg"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/shape_et_bg"/>
+
+            <Button
+                style="@style/Widget.Material3.Button"
+                android:id="@+id/send_msg"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="16sp"
+                app:backgroundTint="?attr/colorPrimaryDark"
+                android:text="发送"
+                app:cornerRadius="8dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="?attr/colorSecondary">
+
+        <Button
+            style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/addNewChatBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="16dp"
+            android:text="New chat"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="24dp"
+            app:iconSize="30dp"
+            app:cornerRadius="16dp"
+            app:strokeWidth="2dp"
+            app:iconGravity="textStart"
+            app:icon="@drawable/ic_add_24dp"/>
+
+    </LinearLayout>
+
+
+</androidx.drawerlayout.widget.DrawerLayout>
+
