@@ -14,7 +14,7 @@ import java.util.concurrent.Flow
 
 object Repository {
 
-    private val apiKey: String = "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"
+    private val apiKey: String = ""
 
     private val openAI = OpenAI(apiKey)
 

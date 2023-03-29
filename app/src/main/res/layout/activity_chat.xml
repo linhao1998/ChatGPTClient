@@ -46,7 +46,7 @@
                 android:padding="16dp"
                 android:text="..."
                 android:textColor="?attr/colorPrimary"
-                android:textSize="26sp"/>
+                android:textSize="20sp"/>
 
         </ScrollView>
 
@@ -54,7 +54,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
@@ -62,18 +62,19 @@
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/et_msg"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:padding="10dp"
+                android:maxLines="3"
                 android:background="@drawable/shape_et_bg"/>
 
             <Button
                 style="@style/Widget.Material3.Button"
                 android:id="@+id/send_msg"
                 android:layout_width="80dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginStart="8dp"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="16sp"
@@ -102,7 +103,7 @@
             android:text="New chat"
             android:textAllCaps="false"
             android:textColor="?attr/colorPrimary"
-            android:textSize="24dp"
+            android:textSize="24sp"
             app:iconSize="30dp"
             app:cornerRadius="16dp"
             app:strokeWidth="2dp"
