@@ -28,27 +28,27 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/rv_msg"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_weight="1"/>-->
-
-        <ScrollView
-            android:layout_width="match_parent"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_msg"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_width="match_parent"
+            android:layout_weight="1" />
 
-            <TextView
-                android:id="@+id/tvMsg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="..."
-                android:textColor="?attr/colorPrimary"
-                android:textSize="20sp"/>
+<!--        <ScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_weight="1">-->
 
-        </ScrollView>
+<!--            <TextView-->
+<!--                android:id="@+id/tvMsg"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:padding="16dp"-->
+<!--                android:text="..."-->
+<!--                android:textColor="?attr/colorPrimary"-->
+<!--                android:textSize="20sp"/>-->
+
+<!--        </ScrollView>-->
 
 
 
@@ -57,7 +57,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp">
+            android:paddingEnd="16dp"
+            android:layout_marginBottom="5dp">
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/et_msg"
@@ -68,6 +69,7 @@
                 android:textSize="16sp"
                 android:padding="10dp"
                 android:maxLines="3"
+                android:hint="Send a message..."
                 android:background="@drawable/shape_et_bg"/>
 
             <Button

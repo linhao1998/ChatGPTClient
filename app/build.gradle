@@ -30,6 +30,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    configurations {
+        cleanedAnnotations
+        implementation.exclude group: 'org.jetbrains' , module:'annotations'
+    }
 }
 
 dependencies {
@@ -52,4 +57,9 @@ dependencies {
     // define dependencies without versions
     implementation 'com.aallam.openai:openai-client'
     implementation 'io.ktor:ktor-client-okhttp'
+
+    implementation "io.noties.markwon:core:4.6.2"
+    implementation "io.noties.markwon:linkify:4.6.2"
+    implementation "io.noties.markwon:syntax-highlight:4.6.2"
+    implementation "io.noties.markwon:recycler:4.6.2"
 }
