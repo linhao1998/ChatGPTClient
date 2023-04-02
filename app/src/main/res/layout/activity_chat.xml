@@ -34,24 +34,6 @@
             android:layout_width="match_parent"
             android:layout_weight="1" />
 
-<!--        <ScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_weight="1">-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/tvMsg"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:padding="16dp"-->
-<!--                android:text="..."-->
-<!--                android:textColor="?attr/colorPrimary"-->
-<!--                android:textSize="20sp"/>-->
-
-<!--        </ScrollView>-->
-
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,15 +55,17 @@
                 android:background="@drawable/shape_et_bg"/>
 
             <Button
-                style="@style/Widget.Material3.Button"
                 android:id="@+id/send_msg"
-                android:layout_width="80dp"
-                android:layout_height="48dp"
+                android:layout_width="76dp"
+                android:layout_height="52dp"
                 android:layout_marginStart="8dp"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="16sp"
-                app:backgroundTint="?attr/colorPrimaryDark"
-                android:text="发送"
+                android:stateListAnimator="@null"
+                android:textAllCaps="false"
+                android:typeface="sans"
+                android:text="Send"
+                android:backgroundTint="?attr/colorPrimaryDark"
                 app:cornerRadius="8dp"/>
 
         </LinearLayout>
