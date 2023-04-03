@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 object Repository {
 
-    private val apiKey: String = "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"
+    private val apiKey: String = ""
 
     private val openAI = OpenAI(apiKey)
 
