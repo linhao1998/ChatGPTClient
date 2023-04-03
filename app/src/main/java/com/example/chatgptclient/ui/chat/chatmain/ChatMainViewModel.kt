@@ -1,25 +1,53 @@
 package com.example.chatgptclient.ui.chat.chatmain
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.aallam.openai.api.BetaOpenAI
 import com.example.chatgptclient.logic.Repository
 import com.example.chatgptclient.logic.model.Msg
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+@OptIn(BetaOpenAI::class)
 class ChatMainViewModel: ViewModel() {
 
-    private val messageLiveData = MutableLiveData<String>()
+    private val _msgContentResult = MutableStateFlow<Result<String>?>(null)
+
+    private val msgContentSB = StringBuilder()
+
+    private var count = 0
 
     val msgList = ArrayList<Msg>()
 
-    @OptIn(BetaOpenAI::class)
-    val chatCompletionLiveData = Transformations.switchMap(messageLiveData) { message ->
-        Repository.getChatCompletion(message)
-    }
+    val msgContentResult: StateFlow<Result<String>?> = _msgContentResult.asStateFlow()
 
     fun sendMessage(message: String) {
-        messageLiveData.value = message
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                Repository.getChatCompletions(message)
+                    .catch { e ->
+                        _msgContentResult.value = Result.failure(e)
+                    }
+                    .collect { chatCompletionChunk ->
+                        chatCompletionChunk.choices[0].delta?.let {
+                            if (it.role != null) {
+                                val msg = Msg("", Msg.TYPE_RECEIVED)
+                                msgList.add(msg)
+                                msgContentSB.clear()
+                                count = 0
+                            } else {
+                                count++
+                                val content = it.content ?: ""
+                                msgContentSB.append(content)
+                                if (count == 5 || count == 25 || count == 50 || count % 80 == 0 || content == "") {
+                                    _msgContentResult.value = Result.success(msgContentSB.toString())
+                                }
+                            }
+                        }
+                    }
+            }
+        }
     }
-
 }

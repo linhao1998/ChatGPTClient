@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aallam.openai.api.BetaOpenAI
+import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
 import com.example.chatgptclient.logic.model.Msg
 import com.example.chatgptclient.ui.chat.chatmain.ChatMainViewModel
@@ -21,6 +21,11 @@ import com.example.chatgptclient.ui.chat.chatmain.MsgAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import io.noties.markwon.*
 import io.noties.prism4j.Prism4j.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class ChatActivity : AppCompatActivity() {
@@ -33,7 +38,6 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var sendMsg: Button
 
     private lateinit var msgAdapter: MsgAdapter
-
 
     private lateinit var msgRecyclerView: RecyclerView
 
@@ -101,22 +105,27 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
-        chatMainViewModel.chatCompletionLiveData.observe(this, Observer { result ->
-            val chatCompletion = result.getOrNull()
-            if (chatCompletion != null) {
-                chatCompletion.choices[0].message?.let {
-                    Log.d("linhao",it.content)
-                    val msg = Msg(it.content,Msg.TYPE_RECEIVED)
-                    chatMainViewModel.msgList.add(msg)
-                    msgAdapter.notifyItemInserted(chatMainViewModel.msgList.size -1 )
-                    msgRecyclerView.scrollToPosition(chatMainViewModel.msgList.size - 1)
-                }
-            } else {
-                Toast.makeText(this,"请求失败",Toast.LENGTH_SHORT).show()
-                result.exceptionOrNull()?.printStackTrace()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+               chatMainViewModel.msgContentResult.collect { result ->
+                   if (result != null) {
+                       val msgContent = result.getOrNull()
+                       if (msgContent != null) {
+                           chatMainViewModel.msgList[chatMainViewModel.msgList.size - 1].content = msgContent
+                           msgAdapter.notifyItemChanged(chatMainViewModel.msgList.size - 1)
+//                           msgRecyclerView.smoothScrollToPosition(chatMainViewModel.msgList.size - 1)
+                           val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                           val lastItem = layoutManager.findViewByPosition(lastVisibleItemPosition)
+                           val lastItemBottom = lastItem?.bottom ?: 0
+                           msgRecyclerView.scrollBy(0, lastItemBottom)
+                       } else {
+                           Toast.makeText(ChatGPTClientApplication.context,"请求失败",Toast.LENGTH_SHORT).show()
+                           result.exceptionOrNull()?.printStackTrace()
+                       }
+                   }
+               }
             }
-        })
-
+        }
     }
 
     /**

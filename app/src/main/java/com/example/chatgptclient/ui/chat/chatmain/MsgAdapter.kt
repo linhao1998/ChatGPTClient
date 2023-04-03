@@ -84,7 +84,6 @@ class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerV
                 holder.leftMsgRecyclerView.layoutManager = layoutManager
                 holder.leftMsgRecyclerView.adapter = markwonAapter
                 markwonAapter.setMarkdown(markwon, msg.content)
-                markwonAapter.notifyDataSetChanged()
             }
             is RightViewHolder -> holder.rightMsg.text = msg.content
             else -> throw IllegalAccessException()
