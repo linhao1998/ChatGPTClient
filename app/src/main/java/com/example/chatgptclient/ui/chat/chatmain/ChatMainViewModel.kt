@@ -1,5 +1,6 @@
 package com.example.chatgptclient.ui.chat.chatmain
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aallam.openai.api.BetaOpenAI
@@ -31,6 +32,7 @@ class ChatMainViewModel: ViewModel() {
                         _msgContentResult.value = Result.failure(e)
                     }
                     .collect { chatCompletionChunk ->
+//                        Log.d("linhao",chatCompletionChunk.toString())
                         chatCompletionChunk.choices[0].delta?.let {
                             if (it.role != null) {
                                 val msg = Msg("", Msg.TYPE_RECEIVED)

@@ -21,12 +21,7 @@ import com.example.chatgptclient.ui.chat.chatmain.MsgAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import io.noties.markwon.*
 import io.noties.prism4j.Prism4j.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var topAppBar: MaterialToolbar
@@ -113,7 +108,6 @@ class ChatActivity : AppCompatActivity() {
                        if (msgContent != null) {
                            chatMainViewModel.msgList[chatMainViewModel.msgList.size - 1].content = msgContent
                            msgAdapter.notifyItemChanged(chatMainViewModel.msgList.size - 1)
-//                           msgRecyclerView.smoothScrollToPosition(chatMainViewModel.msgList.size - 1)
                            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                            val lastItem = layoutManager.findViewByPosition(lastVisibleItemPosition)
                            val lastItemBottom = lastItem?.bottom ?: 0
