@@ -23,7 +23,7 @@
                 android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight"
                 app:title="ChatGPT"
-                app:menu="@menu/top_app_bar"
+                app:menu="@menu/popup_menu"
                 app:navigationIcon="@drawable/ic_chat" />
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -51,7 +51,7 @@
                 android:textSize="16sp"
                 android:padding="10dp"
                 android:maxLines="3"
-                android:hint="Send a message..."
+                android:hint="发送一条消息..."
                 android:background="@drawable/shape_et_bg"/>
 
             <Button
@@ -64,7 +64,7 @@
                 android:stateListAnimator="@null"
                 android:textAllCaps="false"
                 android:typeface="sans"
-                android:text="Send"
+                android:text="发送"
                 android:backgroundTint="?attr/colorPrimaryDark"
                 app:cornerRadius="8dp"/>
 
@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:layout_marginHorizontal="16dp"
-            android:text="New chat"
+            android:text="新增对话"
             android:textAllCaps="false"
             android:textColor="?attr/colorPrimary"
             android:textSize="24sp"
