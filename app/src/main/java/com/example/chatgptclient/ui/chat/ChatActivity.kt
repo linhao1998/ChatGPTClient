@@ -12,7 +12,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.aallam.openai.api.BetaOpenAI
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
 import com.example.chatgptclient.logic.model.Msg
@@ -39,7 +38,6 @@ class ChatActivity : AppCompatActivity() {
     val chatMainViewModel by lazy { ViewModelProvider(this).get(ChatMainViewModel::class.java) }
 
     @SuppressLint("MissingInflatedId")
-    @OptIn(BetaOpenAI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)

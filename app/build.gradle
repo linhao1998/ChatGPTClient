@@ -64,4 +64,5 @@ dependencies {
     implementation "io.noties.markwon:syntax-highlight:4.6.2"
     implementation "io.noties.markwon:recycler:4.6.2"
     implementation "io.noties.markwon:ext-latex:4.6.2"
+    implementation 'ru.noties:jlatexmath-android:0.1.2'
 }

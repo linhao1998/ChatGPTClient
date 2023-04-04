@@ -32,6 +32,8 @@ import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
 import io.noties.markwon.MarkwonSpansFactory
 import io.noties.markwon.core.MarkwonTheme
+import io.noties.markwon.ext.latex.JLatexMathPlugin
+import io.noties.markwon.inlineparser.MarkwonInlineParserPlugin
 import io.noties.markwon.linkify.LinkifyPlugin
 import io.noties.markwon.recycler.MarkwonAdapter
 import io.noties.markwon.recycler.SimpleEntry
@@ -40,12 +42,15 @@ import io.noties.markwon.syntax.Prism4jThemeDefault
 import io.noties.markwon.utils.LeadingMarginUtils
 import io.noties.prism4j.Prism4j
 import org.commonmark.node.FencedCodeBlock
+import java.util.concurrent.Executors
 
 class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val markwon = Markwon.builder(ChatGPTClientApplication.context)
         .usePlugin(MyPlugin())
         .usePlugin(LinkifyPlugin.create(Linkify.WEB_URLS))
+        .usePlugin(MarkwonInlineParserPlugin.create())
+        .usePlugin(JLatexMathPlugin.create(44.toFloat(),MyJLatexMathPlugin()))
         .build()
 
     inner class LeftViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -83,7 +88,7 @@ class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerV
                 val layoutManager = LinearLayoutManager(ChatGPTClientApplication.context)
                 holder.leftMsgRecyclerView.layoutManager = layoutManager
                 holder.leftMsgRecyclerView.adapter = markwonAapter
-                markwonAapter.setMarkdown(markwon, msg.content)
+                markwonAapter.setMarkdown(markwon, Regex("(?<!\\$)\\$(?!\\$)").replace(msg.content){ matchResult -> "$$" })
             }
             is RightViewHolder -> holder.rightMsg.text = msg.content
             else -> throw IllegalAccessException()
@@ -174,6 +179,15 @@ class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerV
                 icon.draw(c)
             } finally {
                 c.restoreToCount(save)
+            }
+        }
+    }
+
+    inner class MyJLatexMathPlugin: JLatexMathPlugin.BuilderConfigure {
+        override fun configureBuilder(builder: JLatexMathPlugin.Builder) {
+            builder.let {
+                it.inlinesEnabled(true)
+                builder.theme().textColor(Color.RED);
             }
         }
     }
