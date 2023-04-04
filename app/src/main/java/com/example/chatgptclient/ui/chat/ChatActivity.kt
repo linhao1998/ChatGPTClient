@@ -1,8 +1,12 @@
 package com.example.chatgptclient.ui.chat
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -63,6 +67,25 @@ class ChatActivity : AppCompatActivity() {
         }
         topAppBar.setOnMenuItemClickListener {menuItem ->
             when (menuItem.itemId) {
+                R.id.rename -> {
+                    true
+                }
+                R.id.copy -> {
+                    if (chatMainViewModel.msgList.size >= 2) {
+                        val msg = chatMainViewModel.msgList[chatMainViewModel.msgList.size-1]
+                        if (msg.type == Msg.TYPE_RECEIVED) {
+                            val clipboard =
+                                ChatGPTClientApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            clipboard.setPrimaryClip(ClipData.newPlainText(null, msg.content))
+                            Toast.makeText(
+                                ChatGPTClientApplication.context,
+                                "复制回复成功",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                    true
+                }
                 R.id.delete -> {
                     true
                 }
