@@ -1,6 +1,5 @@
 package com.example.chatgptclient.logic
 
-import android.accounts.NetworkErrorException
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.model.ModelId
