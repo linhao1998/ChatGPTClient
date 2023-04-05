@@ -20,6 +20,8 @@ class ChatMainViewModel: ViewModel() {
 
     private var count = 0
 
+    var isSend = 1
+
     val msgList = ArrayList<Msg>()
 
     val msgContentResult: StateFlow<Result<String>?> = _msgContentResult.asStateFlow()
@@ -30,6 +32,7 @@ class ChatMainViewModel: ViewModel() {
                 Repository.getChatCompletions(message)
                     .catch { e ->
                         _msgContentResult.value = Result.failure(e)
+                        isSend = 1
                     }
                     .collect { chatCompletionChunk ->
 //                        Log.d("linhao",chatCompletionChunk.toString())
@@ -47,6 +50,9 @@ class ChatMainViewModel: ViewModel() {
                                     _msgContentResult.value = Result.success(msgContentSB.toString())
                                 }
                             }
+                        }
+                        if (chatCompletionChunk.choices[0].finishReason == "stop") {
+                            isSend = 1
                         }
                     }
             }

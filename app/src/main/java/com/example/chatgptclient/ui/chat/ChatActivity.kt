@@ -112,7 +112,8 @@ class ChatActivity : AppCompatActivity() {
         }
         sendMsg.setOnClickListener {
             val sendMsgStr = editTextMsg.text.toString()
-            if (sendMsgStr.isNotEmpty()) {
+            if (sendMsgStr.isNotEmpty() && chatMainViewModel.isSend == 1) {
+                chatMainViewModel.isSend = 0
                 val msg = Msg(sendMsgStr, Msg.TYPE_SENT)
                 chatMainViewModel.msgList.add(msg)
                 msgAdapter.notifyItemInserted(chatMainViewModel.msgList.size -1 )
