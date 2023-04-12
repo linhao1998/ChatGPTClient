@@ -7,6 +7,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.aallam.openai.api.BetaOpenAI
 import com.example.chatgptclient.logic.Repository
+import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -24,6 +25,8 @@ class ChatMainViewModel: ViewModel() {
 
     private val chatIdLiveData = MutableLiveData<Long>()
 
+    private val chatNameLiveData = MutableLiveData<String>()
+
     var chatId:Long? = null
 
     var isSend = 1
@@ -36,6 +39,10 @@ class ChatMainViewModel: ViewModel() {
 
     val loadMsgsLiveData = chatIdLiveData.switchMap { chatId ->
         Repository.loadMsgs(chatId)
+    }
+
+    val renameChatNameLiveData = chatNameLiveData.switchMap { chatName ->
+        Repository.renameChatName(chatId!!, chatName)
     }
 
     fun sendMessage(message: String) {
@@ -82,5 +89,9 @@ class ChatMainViewModel: ViewModel() {
                 Repository.addMsg(msg)
             }
         }
+    }
+
+    fun renameChatName(chatName: String) {
+        chatNameLiveData.value = chatName
     }
 }

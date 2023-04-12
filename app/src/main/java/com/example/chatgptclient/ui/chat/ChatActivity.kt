@@ -19,14 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
+import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import com.example.chatgptclient.ui.chat.chatlist.ChatAdapter
 import com.example.chatgptclient.ui.chat.chatlist.ChatListViewModel
 import com.example.chatgptclient.ui.chat.chatmain.ChatMainViewModel
 import com.example.chatgptclient.ui.chat.chatmain.MsgAdapter
 import com.google.android.material.appbar.MaterialToolbar
-import io.noties.markwon.*
-import io.noties.prism4j.Prism4j.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class ChatActivity : AppCompatActivity() {
@@ -91,22 +91,11 @@ class ChatActivity : AppCompatActivity() {
         topAppBar.setOnMenuItemClickListener {menuItem ->
             when (menuItem.itemId) {
                 R.id.rename -> {
+                    showRenameDialog()
                     true
                 }
                 R.id.copy -> {
-                    if (chatMainViewModel.msgList.size >= 2) {
-                        val msg = chatMainViewModel.msgList[chatMainViewModel.msgList.size-1]
-                        if (msg.type == Msg.TYPE_RECEIVED) {
-                            val clipboard =
-                                ChatGPTClientApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            clipboard.setPrimaryClip(ClipData.newPlainText(null, msg.content))
-                            Toast.makeText(
-                                ChatGPTClientApplication.context,
-                                "复制回复成功",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                    copyResponse()
                     true
                 }
                 R.id.delete -> {
@@ -233,6 +222,16 @@ class ChatActivity : AppCompatActivity() {
                 result.exceptionOrNull()?.printStackTrace()
             }
         }
+        chatMainViewModel.renameChatNameLiveData.observe(this) { result ->
+            val chats = result.getOrNull()
+            if (chats != null) {
+                chatListViewModel.chatList.clear()
+                chatListViewModel.chatList.addAll(chats)
+                chatAdapter.notifyDataSetChanged()
+            } else {
+                result.exceptionOrNull()?.printStackTrace()
+            }
+        }
     }
 
     /**
@@ -242,4 +241,45 @@ class ChatActivity : AppCompatActivity() {
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         return currentNightMode == Configuration.UI_MODE_NIGHT_YES
     }
+
+    /**
+     * 显示重命名对话框
+     */
+    private fun showRenameDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_rename,null)
+        val editTextRename: EditText = dialogView.findViewById(R.id.et_rename)
+        MaterialAlertDialogBuilder(this)
+            .setTitle("重命名")
+            .setView(dialogView)
+            .setNegativeButton("取消") { dialog, which ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("确定") { dialog, which ->
+                val text = editTextRename.text.toString()
+                topAppBar.title = text
+                chatMainViewModel.renameChatName(text)
+                dialog.dismiss()
+            }
+            .show()
+        editTextRename.setText(topAppBar.title)
+        editTextRename.requestFocus()
+    }
+
+
+    private fun copyResponse() {
+        if (chatMainViewModel.msgList.size >= 2) {
+            val msg = chatMainViewModel.msgList[chatMainViewModel.msgList.size-1]
+            if (msg.type == Msg.TYPE_RECEIVED) {
+                val clipboard =
+                    ChatGPTClientApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText(null, msg.content))
+                Toast.makeText(
+                    ChatGPTClientApplication.context,
+                    "复制回复成功",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
 }

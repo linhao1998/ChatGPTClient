@@ -3,8 +3,10 @@ package com.example.chatgptclient.logic
 import androidx.lifecycle.liveData
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.*
+import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.aallam.openai.client.OpenAIConfig
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
@@ -12,7 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.seconds
 
 object Repository {
 
@@ -65,6 +69,16 @@ object Repository {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun renameChatName(chatId: Long, chatName: String) = fire(Dispatchers.IO) {
+       coroutineScope {
+           val queryChat = async { chatDao.querySpecifyChat(chatId) }.await()
+           queryChat.chatName = chatName
+           async { chatDao.update(queryChat) }.await()
+           val chatList = async { chatDao.loadAllChats() }.await()
+           Result.success(chatList)
+       }
     }
 
     private fun <T> fire(context: CoroutineContext, block: suspend () -> Result<T>) =
