@@ -5,11 +5,11 @@
         android:id="@+id/rename"
         android:title="重命名"/>
     <item
+        android:id="@+id/delete"
+        android:title="删除对话"/>
+    <item
         android:id="@+id/copy"
         android:title="复制回复"/>
-    <item
-        android:id="@+id/delete"
-        android:title="删除消息"/>
     <item
         android:id="@+id/settings"
         android:title="设置"/>

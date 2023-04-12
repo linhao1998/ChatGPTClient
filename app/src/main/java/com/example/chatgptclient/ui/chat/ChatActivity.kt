@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
-import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import com.example.chatgptclient.ui.chat.chatlist.ChatAdapter
 import com.example.chatgptclient.ui.chat.chatlist.ChatListViewModel
@@ -91,14 +90,16 @@ class ChatActivity : AppCompatActivity() {
         topAppBar.setOnMenuItemClickListener {menuItem ->
             when (menuItem.itemId) {
                 R.id.rename -> {
-                    showRenameDialog()
+                    if (!chatMainViewModel.isChatGPT) {
+                        showRenameDialog()
+                    }
+                    true
+                }
+                R.id.delete -> {
                     true
                 }
                 R.id.copy -> {
                     copyResponse()
-                    true
-                }
-                R.id.delete -> {
                     true
                 }
                 R.id.settings -> {
@@ -122,11 +123,11 @@ class ChatActivity : AppCompatActivity() {
         }
         sendMsg.setOnClickListener {
             sendMsgStr = editTextMsg.text.toString()
-            if (sendMsgStr.isNotEmpty() && chatMainViewModel.isSend == 1) {
+            if (sendMsgStr.isNotEmpty() && chatMainViewModel.isSend) {
                 if (chatMainViewModel.chatId == null) {
                     chatListViewModel.addChat()
                 } else {
-                    chatMainViewModel.isSend = 0
+                    chatMainViewModel.isSend = false
                     val msg = Msg(sendMsgStr, Msg.TYPE_SENT, chatMainViewModel.chatId)
                     chatMainViewModel.msgList.add(msg)
                     chatMainViewModel.addMsg(msg)
@@ -151,8 +152,10 @@ class ChatActivity : AppCompatActivity() {
             override fun onDrawerStateChanged(newState: Int) {}
         })
         addNewChatBtn.setOnClickListener {
-            chatListViewModel.addChat()
-            chatMainViewModel.isChatGPT = 0
+            if (chatMainViewModel.isSend) {
+                chatListViewModel.addChat()
+                chatMainViewModel.isChatGPT = false
+            }
         }
 
         lifecycleScope.launch {
@@ -186,9 +189,9 @@ class ChatActivity : AppCompatActivity() {
                 chatMainViewModel.msgList.clear()
                 msgAdapter.notifyDataSetChanged()
 
-                if (chatMainViewModel.isChatGPT == 1) {
-                    chatMainViewModel.isSend = 0
-                    chatMainViewModel.isChatGPT = 0
+                if (chatMainViewModel.isChatGPT) {
+                    chatMainViewModel.isSend = false
+                    chatMainViewModel.isChatGPT = false
                     val msg = Msg(sendMsgStr, Msg.TYPE_SENT, chatMainViewModel.chatId)
                     chatMainViewModel.msgList.add(msg)
                     chatMainViewModel.addMsg(msg)
@@ -213,7 +216,6 @@ class ChatActivity : AppCompatActivity() {
         }
         chatMainViewModel.loadMsgsLiveData.observe(this) { result ->
             val msgs = result.getOrNull()
-//            Log.d("linhao",msgs.toString())
             if (msgs != null) {
                 chatMainViewModel.msgList.clear()
                 chatMainViewModel.msgList.addAll(msgs)
@@ -265,7 +267,9 @@ class ChatActivity : AppCompatActivity() {
         editTextRename.requestFocus()
     }
 
-
+    /**
+     * 复制回复到剪切板
+     */
     private fun copyResponse() {
         if (chatMainViewModel.msgList.size >= 2) {
             val msg = chatMainViewModel.msgList[chatMainViewModel.msgList.size-1]

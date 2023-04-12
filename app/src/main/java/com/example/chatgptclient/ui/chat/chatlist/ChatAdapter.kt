@@ -19,12 +19,15 @@ class ChatAdapter(private val chatActivity: ChatActivity, private val chatList: 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_item,parent,false)
         val holder = ViewHolder(view)
         holder.itemView.setOnClickListener {
-            val position = holder.bindingAdapterPosition
-            val chat = chatList[position]
-            chatActivity.topAppBar.title = chat.chatName
-            chatActivity.chatMainViewModel.chatId = chat.id
-            chatActivity.chatMainViewModel.loadMsgs(chat.id)
-            chatActivity.drawerLayout.closeDrawers()
+            if (chatActivity.chatMainViewModel.isSend) {
+                val position = holder.bindingAdapterPosition
+                val chat = chatList[position]
+                chatActivity.topAppBar.title = chat.chatName
+                chatActivity.chatMainViewModel.chatId = chat.id
+                chatActivity.chatMainViewModel.isChatGPT = false
+                chatActivity.chatMainViewModel.loadMsgs(chat.id)
+                chatActivity.drawerLayout.closeDrawers()
+            }
         }
         return holder
     }

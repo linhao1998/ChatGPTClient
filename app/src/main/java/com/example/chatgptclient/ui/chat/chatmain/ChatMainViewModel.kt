@@ -7,7 +7,6 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.aallam.openai.api.BetaOpenAI
 import com.example.chatgptclient.logic.Repository
-import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -21,17 +20,17 @@ class ChatMainViewModel: ViewModel() {
 
     private val msgContentSB = StringBuilder()
 
-    private var count = 0
-
     private val chatIdLiveData = MutableLiveData<Long>()
 
     private val chatNameLiveData = MutableLiveData<String>()
 
+    private var count = 0
+
     var chatId:Long? = null
 
-    var isSend = 1
+    var isSend = true
 
-    var isChatGPT = 1
+    var isChatGPT = true
 
     val msgList = ArrayList<Msg>()
 
@@ -51,10 +50,9 @@ class ChatMainViewModel: ViewModel() {
                 Repository.getChatCompletions(message)
                     .catch { e ->
                         _msgContentResult.value = Result.failure(e)
-                        isSend = 1
+                        isSend = true
                     }
                     .collect { chatCompletionChunk ->
-//                        Log.d("linhao",chatCompletionChunk.toString())
                         chatCompletionChunk.choices[0].delta?.let {
                             if (it.role != null) {
                                 val msg = Msg("", Msg.TYPE_RECEIVED, chatId)
@@ -71,16 +69,12 @@ class ChatMainViewModel: ViewModel() {
                             }
                         }
                         if (chatCompletionChunk.choices[0].finishReason == "stop") {
-                            isSend = 1
+                            isSend = true
                             Repository.addMsg(Msg(msgContentSB.toString(),Msg.TYPE_RECEIVED,chatId))
                         }
                     }
             }
         }
-    }
-
-    fun loadMsgs(chatId: Long) {
-        chatIdLiveData.value = chatId
     }
 
     fun addMsg(msg: Msg) {
@@ -89,6 +83,10 @@ class ChatMainViewModel: ViewModel() {
                 Repository.addMsg(msg)
             }
         }
+    }
+
+    fun loadMsgs(chatId: Long) {
+        chatIdLiveData.value = chatId
     }
 
     fun renameChatName(chatName: String) {
