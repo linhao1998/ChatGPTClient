@@ -72,31 +72,17 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="?attr/colorSecondary">
 
-        <Button
-            style="?attr/materialButtonOutlinedStyle"
-            android:id="@+id/addNewChatBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:layout_marginHorizontal="16dp"
-            android:text="新增对话"
-            android:textAllCaps="false"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="24sp"
-            app:iconSize="30dp"
-            app:cornerRadius="16dp"
-            app:strokeWidth="2dp"
-            app:iconGravity="textStart"
-            app:icon="@drawable/ic_add_24dp"/>
+        <include layout="@layout/chat_list"/>
 
-    </LinearLayout>
+    </FrameLayout>
+
+
 
 
 </androidx.drawerlayout.widget.DrawerLayout>
