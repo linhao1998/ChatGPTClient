@@ -18,4 +18,7 @@ interface ChatDao {
     @Query("update chats set chatName = :newChatName where id = :id")
     fun updateChatName(id: Long, newChatName: String)
 
+    @Query("delete from chats where id = :chatId")
+    fun deleteChatByChatId(chatId: Long): Int
+
 }

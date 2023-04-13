@@ -24,6 +24,8 @@ class ChatMainViewModel: ViewModel() {
 
     private val chatNameLiveData = MutableLiveData<String>()
 
+    private val deleteChatIdLiveData = MutableLiveData<Long>()
+
     private var count = 0
 
     var chatId:Long? = null
@@ -42,6 +44,10 @@ class ChatMainViewModel: ViewModel() {
 
     val renameChatNameLiveData = chatNameLiveData.switchMap { chatName ->
         Repository.renameChatName(chatId!!, chatName)
+    }
+
+    val deleteChatAndMsgLiveData = deleteChatIdLiveData.switchMap { chatId ->
+        Repository.deleteChatAndMsgs(chatId)
     }
 
     fun sendMessage(message: String) {
@@ -91,5 +97,9 @@ class ChatMainViewModel: ViewModel() {
 
     fun renameChatName(chatName: String) {
         chatNameLiveData.value = chatName
+    }
+
+    fun deleteChatAndMsgs(chatId: Long) {
+        deleteChatIdLiveData.value = chatId
     }
 }

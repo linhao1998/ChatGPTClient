@@ -6,6 +6,7 @@ import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.example.chatgptclient.ChatGPTClientApplication
+import com.example.chatgptclient.logic.dao.MsgDao
 import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +74,17 @@ object Repository {
            val chatList = async { chatDao.loadAllChats() }.await()
            Result.success(chatList)
        }
+    }
+
+    fun deleteChatAndMsgs(chatId: Long) = fire(Dispatchers.IO) {
+        coroutineScope {
+            val deferredDeletedChat = async { chatDao.deleteChatByChatId(chatId) }
+            val deferredDeletedMsgs = async { msgDao.deleteMessagesByChatId(chatId) }
+            deferredDeletedChat.await()
+            deferredDeletedMsgs.await()
+            val chatList = async { chatDao.loadAllChats() }.await()
+            Result.success(chatList)
+        }
     }
 
     private fun <T> fire(context: CoroutineContext, block: suspend () -> Result<T>) =

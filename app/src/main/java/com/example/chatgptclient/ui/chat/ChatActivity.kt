@@ -92,12 +92,11 @@ class ChatActivity : AppCompatActivity() {
         topAppBar.setOnMenuItemClickListener {menuItem ->
             when (menuItem.itemId) {
                 R.id.rename -> {
-                    if (!chatMainViewModel.isChatGPT) {
-                        showRenameDialog()
-                    }
+                    showRenameDialog()
                     true
                 }
                 R.id.delete -> {
+                    deleteChatAndMsgs()
                     true
                 }
                 R.id.copy -> {
@@ -237,6 +236,19 @@ class ChatActivity : AppCompatActivity() {
                 result.exceptionOrNull()?.printStackTrace()
             }
         }
+        chatMainViewModel.deleteChatAndMsgLiveData.observe(this) {result ->
+            val chats = result.getOrNull()
+            if (chats != null) {
+                topAppBar.title = "ChatGPT"
+                chatListViewModel.chatList.clear()
+                chatListViewModel.chatList.addAll(chats)
+                chatAdapter.notifyDataSetChanged()
+                chatMainViewModel.msgList.clear()
+                msgAdapter.notifyDataSetChanged()
+            } else {
+                result.exceptionOrNull()?.printStackTrace()
+            }
+        }
     }
 
     /**
@@ -251,23 +263,43 @@ class ChatActivity : AppCompatActivity() {
      * 显示重命名对话框
      */
     private fun showRenameDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_rename,null)
-        val editTextRename: EditText = dialogView.findViewById(R.id.et_rename)
-        MaterialAlertDialogBuilder(this)
-            .setTitle("重命名")
-            .setView(dialogView)
-            .setNegativeButton("取消") { dialog, which ->
-                dialog.dismiss()
-            }
-            .setPositiveButton("确定") { dialog, which ->
-                val text = editTextRename.text.toString()
-                topAppBar.title = text
-                chatMainViewModel.renameChatName(text)
-                dialog.dismiss()
-            }
-            .show()
-        editTextRename.setText(topAppBar.title)
-        editTextRename.requestFocus()
+        if (!chatMainViewModel.isChatGPT) {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_rename,null)
+            val editTextRename: EditText = dialogView.findViewById(R.id.et_rename)
+            MaterialAlertDialogBuilder(this)
+                .setTitle("重命名")
+                .setView(dialogView)
+                .setNegativeButton("取消") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton("确定") { dialog, which ->
+                    val text = editTextRename.text.toString()
+                    topAppBar.title = text
+                    chatMainViewModel.renameChatName(text)
+                    dialog.dismiss()
+                }
+                .show()
+            editTextRename.setText(topAppBar.title)
+            editTextRename.requestFocus()
+        }
+    }
+
+    /**
+     * 删除对话及消息
+     */
+    private fun deleteChatAndMsgs() {
+        if (!chatMainViewModel.isChatGPT && chatMainViewModel.isSend) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("删除该对话？")
+                .setNegativeButton("取消") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton("确定") { dialog, which ->
+                    chatMainViewModel.deleteChatAndMsgs(chatMainViewModel.chatId!!)
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 
     /**
