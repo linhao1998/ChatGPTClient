@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -187,7 +188,7 @@ class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerV
         override fun configureBuilder(builder: JLatexMathPlugin.Builder) {
             builder.let {
                 it.inlinesEnabled(true)
-                builder.theme().textColor(Color.BLUE);
+                builder.theme().textColor(ContextCompat.getColor(ChatGPTClientApplication.context, R.color.royal_blue));
             }
         }
     }

@@ -220,6 +220,7 @@ class ChatActivity : AppCompatActivity() {
                 chatMainViewModel.msgList.clear()
                 chatMainViewModel.msgList.addAll(msgs)
                 msgAdapter.notifyDataSetChanged()
+                msgRecyclerView.scrollToPosition(chatMainViewModel.msgList.size - 1)
             } else {
                 result.exceptionOrNull()?.printStackTrace()
             }
