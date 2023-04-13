@@ -187,7 +187,7 @@ class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerV
         override fun configureBuilder(builder: JLatexMathPlugin.Builder) {
             builder.let {
                 it.inlinesEnabled(true)
-                builder.theme().textColor(Color.RED);
+                builder.theme().textColor(Color.BLUE);
             }
         }
     }
