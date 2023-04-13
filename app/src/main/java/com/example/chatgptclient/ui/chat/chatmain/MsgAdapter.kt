@@ -43,7 +43,6 @@ import io.noties.markwon.syntax.Prism4jThemeDefault
 import io.noties.markwon.utils.LeadingMarginUtils
 import io.noties.prism4j.Prism4j
 import org.commonmark.node.FencedCodeBlock
-import java.util.concurrent.Executors
 
 class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

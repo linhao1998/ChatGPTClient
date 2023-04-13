@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -33,10 +32,6 @@ class ChatActivity : AppCompatActivity() {
 
     lateinit var drawerLayout: DrawerLayout
 
-    lateinit var textViewBg: TextView
-
-    lateinit var msgRecyclerView: RecyclerView
-
     private lateinit var editTextMsg: EditText
 
     private lateinit var sendMsg: Button
@@ -47,9 +42,13 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var chatRecyclerView: RecyclerView
 
+    private lateinit var msgRecyclerView: RecyclerView
+
     private lateinit var addNewChatBtn: Button
 
     private lateinit var sendMsgStr: String
+
+    private lateinit var textViewBg: TextView
 
     val chatMainViewModel by lazy { ViewModelProvider(this).get(ChatMainViewModel::class.java) }
 
@@ -223,10 +222,13 @@ class ChatActivity : AppCompatActivity() {
         chatMainViewModel.loadMsgsLiveData.observe(this) { result ->
             val msgs = result.getOrNull()
             if (msgs != null) {
+                msgRecyclerView.visibility = View.VISIBLE
+                textViewBg.visibility = View.GONE
                 chatMainViewModel.msgList.clear()
                 chatMainViewModel.msgList.addAll(msgs)
                 msgAdapter.notifyDataSetChanged()
                 msgRecyclerView.scrollToPosition(chatMainViewModel.msgList.size - 1)
+                drawerLayout.closeDrawers()
             } else {
                 result.exceptionOrNull()?.printStackTrace()
             }

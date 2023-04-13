@@ -6,7 +6,6 @@ import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.example.chatgptclient.ChatGPTClientApplication
-import com.example.chatgptclient.logic.dao.MsgDao
 import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import kotlinx.coroutines.Dispatchers
