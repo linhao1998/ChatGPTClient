@@ -16,7 +16,7 @@ import kotlin.coroutines.CoroutineContext
 
 object Repository {
 
-    private val apiKey: String = ""
+    private val apiKey: String = "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"
 
     private val openAI = OpenAI(apiKey)
 

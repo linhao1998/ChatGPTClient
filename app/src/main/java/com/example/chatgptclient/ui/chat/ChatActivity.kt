@@ -72,6 +72,8 @@ class ChatActivity : AppCompatActivity() {
         msgRecyclerView.adapter = msgAdapter
 
         val chatLayoutManager = LinearLayoutManager(this)
+        chatLayoutManager.reverseLayout = true
+        chatLayoutManager.stackFromEnd = true
         chatAdapter = ChatAdapter(this,chatListViewModel.chatList)
         chatRecyclerView.layoutManager = chatLayoutManager
         chatRecyclerView.adapter = chatAdapter
