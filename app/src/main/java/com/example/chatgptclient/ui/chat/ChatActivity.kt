@@ -33,6 +33,10 @@ class ChatActivity : AppCompatActivity() {
 
     lateinit var drawerLayout: DrawerLayout
 
+    lateinit var textViewBg: TextView
+
+    lateinit var msgRecyclerView: RecyclerView
+
     private lateinit var editTextMsg: EditText
 
     private lateinit var sendMsg: Button
@@ -40,8 +44,6 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var msgAdapter: MsgAdapter
 
     private lateinit var chatAdapter: ChatAdapter
-
-    private lateinit var msgRecyclerView: RecyclerView
 
     private lateinit var chatRecyclerView: RecyclerView
 
@@ -65,6 +67,7 @@ class ChatActivity : AppCompatActivity() {
         msgRecyclerView = findViewById(R.id.rv_msg)
         chatRecyclerView = findViewById(R.id.rv_chat)
         addNewChatBtn = findViewById(R.id.addNewChatBtn)
+        textViewBg = findViewById(R.id.tv_bg)
 
         val msgLayoutManager = LinearLayoutManager(this)
         msgAdapter = MsgAdapter(chatMainViewModel.msgList)
@@ -193,6 +196,8 @@ class ChatActivity : AppCompatActivity() {
                 if (chatMainViewModel.isChatGPT) {
                     chatMainViewModel.isSend = false
                     chatMainViewModel.isChatGPT = false
+                    msgRecyclerView.visibility = View.VISIBLE
+                    textViewBg.visibility = View.GONE
                     val msg = Msg(sendMsgStr, Msg.TYPE_SENT, chatMainViewModel.chatId)
                     chatMainViewModel.msgList.add(msg)
                     chatMainViewModel.addMsg(msg)
@@ -240,6 +245,9 @@ class ChatActivity : AppCompatActivity() {
             val chats = result.getOrNull()
             if (chats != null) {
                 topAppBar.title = "ChatGPT"
+                chatMainViewModel.chatId = null
+                msgRecyclerView.visibility = View.GONE
+                textViewBg.visibility = View.VISIBLE
                 chatListViewModel.chatList.clear()
                 chatListViewModel.chatList.addAll(chats)
                 chatAdapter.notifyDataSetChanged()

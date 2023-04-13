@@ -15,7 +15,7 @@
         android:layout_gravity="center_vertical"
         android:paddingHorizontal="8dp"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="24sp"/>
+        android:textSize="22sp"/>
 
 
 </com.google.android.material.card.MaterialCardView>
