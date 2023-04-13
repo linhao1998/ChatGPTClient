@@ -16,7 +16,7 @@ import kotlin.coroutines.CoroutineContext
 
 object Repository {
 
-    private val apiKey: String = "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"
+    private val apiKey: String = ""
 
     private val openAI = OpenAI(apiKey)
 
@@ -67,11 +67,9 @@ object Repository {
         }
     }
 
-    fun renameChatName(chatId: Long, chatName: String) = fire(Dispatchers.IO) {
+    fun renameChatName(chatId: Long, newChatName: String) = fire(Dispatchers.IO) {
        coroutineScope {
-           val queryChat = async { chatDao.querySpecifyChat(chatId) }.await()
-           queryChat.chatName = chatName
-           async { chatDao.update(queryChat) }.await()
+           async { chatDao.updateChatName(chatId, newChatName) }.await()
            val chatList = async { chatDao.loadAllChats() }.await()
            Result.success(chatList)
        }

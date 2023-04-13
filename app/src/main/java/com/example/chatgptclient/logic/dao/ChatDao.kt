@@ -12,13 +12,10 @@ interface ChatDao {
     @Insert
     fun insertChat(chat: Chat): Long
 
-    @Update
-    fun update(chat: Chat)
-
     @Query("select * from chats")
     fun loadAllChats(): List<Chat>
 
-    @Query("select * from chats where id = :id")
-    fun querySpecifyChat(id: Long): Chat
+    @Query("update chats set chatName = :newChatName where id = :id")
+    fun updateChatName(id: Long, newChatName: String)
 
 }
