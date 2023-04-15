@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.chatgptclient.R
 import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.ui.chat.ChatActivity
+import com.example.chatgptclient.ui.chat.ChatViewModel
 
 class ChatAdapter(private val chatActivity: ChatActivity, private val chatList: List<Chat>): RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
@@ -19,13 +20,16 @@ class ChatAdapter(private val chatActivity: ChatActivity, private val chatList: 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_item,parent,false)
         val holder = ViewHolder(view)
         holder.itemView.setOnClickListener {
-            if (chatActivity.chatMainViewModel.isSend) {
+            if (chatActivity.msgListViewModel.isSend) {
                 val position = holder.bindingAdapterPosition
                 val chat = chatList[position]
-                chatActivity.topAppBar.title = chat.chatName
-                chatActivity.chatMainViewModel.chatId = chat.id
-                chatActivity.chatMainViewModel.isChatGPT = false
-                chatActivity.chatMainViewModel.loadMsgs(chat.id)
+                chatActivity.chatViewModel.chatName = chat.chatName
+                chatActivity.topAppBar.title = chatActivity.chatViewModel.chatName
+                ChatViewModel.chatId = chat.id
+                chatActivity.chatViewModel.isChatGPT = false
+                chatActivity.msgRecyclerView.visibility = View.VISIBLE
+                chatActivity.textViewBg.visibility = View.GONE
+                chatActivity.chatViewModel.loadMsgsOfChat(chat.id)
             }
         }
         return holder

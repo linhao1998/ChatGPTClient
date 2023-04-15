@@ -1,6 +1,5 @@
 package com.example.chatgptclient.logic
 
-import androidx.lifecycle.liveData
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.model.ModelId
@@ -10,9 +9,8 @@ import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.withContext
 
 object Repository {
 
@@ -38,61 +36,79 @@ object Repository {
         return openAI.chatCompletions(chatCompletionRequest)
     }
 
-    fun addChat(chat: Chat) = fire(Dispatchers.IO) {
-        coroutineScope {
-            val chatId = async { chatDao.insertChat(chat) }.await()
-            Result.success(chatId)
+    suspend fun addNewChat(chat: Chat): Result<Long> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val num = async { chatDao.insertChat(chat) }.await()
+                Result.success(num)
+            }
+        }catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    fun loadAllChats() = fire(Dispatchers.IO) {
-        coroutineScope {
-            val chatList = async { chatDao.loadAllChats() }.await()
-            Result.success(chatList)
+    suspend fun renameChatName(chatId: Long, chatName: String): Result<Int> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val num = async { chatDao.updateChatName(chatId,chatName) }.await()
+                Result.success(num)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    fun loadMsgs(chatId: Long) = fire(Dispatchers.IO) {
-        coroutineScope {
-            val msgList = async { msgDao.loadMsgs(chatId) }.await()
-            Result.success(msgList)
+    suspend fun deleteChat(chatId: Long): Result<Int> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val num = async { chatDao.deleteChatByChatId(chatId) }.await()
+                Result.success(num)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    fun addMsg(msg: Msg) {
+    suspend fun loadAllChats(): Result<List<Chat>>{
+        return try {
+            withContext(Dispatchers.IO) {
+                val chatList = async { chatDao.loadAllChats() }.await()
+                Result.success(chatList)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun addMsg(msg: Msg) {
         try {
-            msgDao.insertMsg(msg)
+            withContext(Dispatchers.IO) {
+                msgDao.insertMsg(msg)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun renameChatName(chatId: Long, newChatName: String) = fire(Dispatchers.IO) {
-       coroutineScope {
-           async { chatDao.updateChatName(chatId, newChatName) }.await()
-           val chatList = async { chatDao.loadAllChats() }.await()
-           Result.success(chatList)
-       }
-    }
-
-    fun deleteChatAndMsgs(chatId: Long) = fire(Dispatchers.IO) {
-        coroutineScope {
-            val deferredDeletedChat = async { chatDao.deleteChatByChatId(chatId) }
-            val deferredDeletedMsgs = async { msgDao.deleteMessagesByChatId(chatId) }
-            deferredDeletedChat.await()
-            deferredDeletedMsgs.await()
-            val chatList = async { chatDao.loadAllChats() }.await()
-            Result.success(chatList)
-        }
-    }
-
-    private fun <T> fire(context: CoroutineContext, block: suspend () -> Result<T>) =
-        liveData(context) {
-            val result = try {
-                block()
-            }catch (e: Exception) {
-                Result.failure(e)
+    suspend fun deleteMsgsOfChat(chatId: Long): Result<Int> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val num = async { msgDao.deleteMessagesByChatId(chatId) }.await()
+                Result.success(num)
             }
-            emit(result)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
+    }
+
+    suspend fun loadMsgsOfChat(chatId: Long): Result<List<Msg>> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val msgList = async { msgDao.loadMsgs(chatId) }.await()
+                Result.success(msgList)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

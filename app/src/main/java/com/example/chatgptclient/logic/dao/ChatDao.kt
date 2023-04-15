@@ -15,7 +15,7 @@ interface ChatDao {
     fun loadAllChats(): List<Chat>
 
     @Query("update chats set chatName = :newChatName where id = :id")
-    fun updateChatName(id: Long, newChatName: String)
+    fun updateChatName(id: Long, newChatName: String): Int
 
     @Query("delete from chats where id = :chatId")
     fun deleteChatByChatId(chatId: Long): Int
