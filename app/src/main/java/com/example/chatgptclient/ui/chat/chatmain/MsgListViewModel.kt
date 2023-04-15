@@ -1,5 +1,6 @@
 package com.example.chatgptclient.ui.chat.chatmain
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aallam.openai.api.BetaOpenAI
@@ -20,7 +21,11 @@ class MsgListViewModel: ViewModel() {
 
     private var count = 0
 
-    var isSend = true
+    var isSend = MutableLiveData<Boolean>()
+
+    init {
+        isSend.value = true
+    }
 
     companion object {
         val msgList = ArrayList<Msg>()
@@ -34,7 +39,7 @@ class MsgListViewModel: ViewModel() {
                 Repository.getChatCompletions(message)
                     .catch { e ->
                         _msgContentResult.value = Result.failure(e)
-                        isSend = true
+                        isSend.postValue(true)
                     }
                     .collect { chatCompletionChunk ->
                         chatCompletionChunk.choices[0].delta?.let {
@@ -53,7 +58,7 @@ class MsgListViewModel: ViewModel() {
                             }
                         }
                         if (chatCompletionChunk.choices[0].finishReason == "stop") {
-                            isSend = true
+                            isSend.postValue(true)
                             Repository.addMsg(Msg(msgContentSB.toString(),Msg.TYPE_RECEIVED,ChatViewModel.chatId))
                         }
                     }

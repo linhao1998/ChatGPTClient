@@ -1,18 +1,15 @@
 package com.example.chatgptclient.ui.chat
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.drawerlayout.widget.DrawerLayout
@@ -26,6 +23,7 @@ import com.example.chatgptclient.ui.chat.chatlist.ChatAdapter
 import com.example.chatgptclient.ui.chat.chatlist.ChatListViewModel
 import com.example.chatgptclient.ui.chat.chatmain.MsgListViewModel
 import com.example.chatgptclient.ui.chat.chatmain.MsgAdapter
+import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import es.dmoral.toasty.Toasty
@@ -45,6 +43,8 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var chatRecyclerView: RecyclerView
 
+    private lateinit var loadingIndicator: SpinKitView
+
     lateinit var msgRecyclerView: RecyclerView
 
     lateinit var textViewBg: TextView
@@ -53,11 +53,11 @@ class ChatActivity : AppCompatActivity() {
 
     lateinit var drawerLayout: DrawerLayout
 
-    val msgListViewModel by lazy { ViewModelProvider(this).get(MsgListViewModel::class.java) }
+    val msgListViewModel by lazy { ViewModelProvider(this)[MsgListViewModel::class.java] }
 
-    val chatListViewModel by lazy { ViewModelProvider(this).get(ChatListViewModel::class.java) }
+    private val chatListViewModel by lazy { ViewModelProvider(this)[ChatListViewModel::class.java] }
 
-    val chatViewModel by lazy { ViewModelProvider(this).get(ChatViewModel::class.java) }
+    val chatViewModel by lazy { ViewModelProvider(this)[ChatViewModel::class.java] }
 
     @SuppressLint("MissingInflatedId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +72,7 @@ class ChatActivity : AppCompatActivity() {
         chatRecyclerView = findViewById(R.id.rv_chat)
         addNewChatBtn = findViewById(R.id.addNewChatBtn)
         textViewBg = findViewById(R.id.tv_bg)
+        loadingIndicator = findViewById(R.id.loading)
 
         if (isDarkTheme()) {
             topAppBar.setNavigationIcon(R.drawable.ic_chat_dark)
@@ -136,7 +137,7 @@ class ChatActivity : AppCompatActivity() {
         }
         sendMsg.setOnClickListener {
             val sendMsgStr = editTextMsg.text.toString()
-            if (sendMsgStr.isNotEmpty() && msgListViewModel.isSend) {
+            if (sendMsgStr.isNotEmpty() && msgListViewModel.isSend.value == true) {
                 val msg = Msg(sendMsgStr, Msg.TYPE_SENT, ChatViewModel.chatId)
                 if (ChatViewModel.chatId == null) {
                     chatViewModel.isChatGPT = false
@@ -148,7 +149,7 @@ class ChatActivity : AppCompatActivity() {
                 } else {
                     chatViewModel.addMsg(msg)
                 }
-                msgListViewModel.isSend = false
+                msgListViewModel.isSend.value = false
                 MsgListViewModel.msgList.add(msg)
                 msgAdapter.notifyItemInserted(MsgListViewModel.msgList.size -1 )
                 msgRecyclerView.scrollToPosition(MsgListViewModel.msgList.size - 1)
@@ -170,7 +171,7 @@ class ChatActivity : AppCompatActivity() {
             override fun onDrawerStateChanged(newState: Int) {}
         })
         addNewChatBtn.setOnClickListener {
-            if (msgListViewModel.isSend) {
+            if (msgListViewModel.isSend.value == true) {
                 chatViewModel.isChatGPT = false
                 chatViewModel.chatName = "New chat"
                 topAppBar.title = chatViewModel.chatName
@@ -194,7 +195,7 @@ class ChatActivity : AppCompatActivity() {
                            val lastItemBottom = lastItem?.bottom ?: 0
                            msgRecyclerView.scrollBy(0, lastItemBottom)
                        } else {
-                           Toasty.error(ChatGPTClientApplication.context, "请求失败", Toast.LENGTH_SHORT, true).show();
+                           Toasty.error(ChatGPTClientApplication.context, "请求失败", Toast.LENGTH_SHORT, true).show()
                            result.exceptionOrNull()?.printStackTrace()
                        }
                    }
@@ -202,13 +203,21 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
+        msgListViewModel.isSend.observe(this) { isSend ->
+            if (isSend) {
+                sendMsg.visibility = View.VISIBLE
+                loadingIndicator.visibility = View.GONE
+            } else {
+                sendMsg.visibility = View.GONE
+                loadingIndicator.visibility = View.VISIBLE
+            }
+        }
         chatViewModel.chatsLiveData.observe(this) { result ->
             val chats = result.getOrNull()
             if (chats != null) {
                 chatListViewModel.chatList.clear()
                 chatListViewModel.chatList.addAll(chats)
                 chatAdapter.notifyDataSetChanged()
-                drawerLayout.closeDrawers()
             } else {
                 result.exceptionOrNull()?.printStackTrace()
             }
@@ -254,10 +263,10 @@ class ChatActivity : AppCompatActivity() {
             MaterialAlertDialogBuilder(this)
                 .setTitle("重命名")
                 .setView(dialogView)
-                .setNegativeButton("取消") { dialog, which ->
+                .setNegativeButton("取消") { dialog, _ ->
                     dialog.dismiss()
                 }
-                .setPositiveButton("确定") { dialog, which ->
+                .setPositiveButton("确定") { dialog, _ ->
                     val text = editTextRename.text.toString()
                     chatViewModel.chatName = text
                     topAppBar.title = chatViewModel.chatName
@@ -275,13 +284,13 @@ class ChatActivity : AppCompatActivity() {
      */
     @SuppressLint("NotifyDataSetChanged")
     private fun deleteChatAndMsgs() {
-        if (!chatViewModel.isChatGPT && msgListViewModel.isSend) {
+        if (!chatViewModel.isChatGPT && msgListViewModel.isSend.value == true) {
             MaterialAlertDialogBuilder(this)
                 .setTitle("删除该对话？")
-                .setNegativeButton("取消") { dialog, which ->
+                .setNegativeButton("取消") { dialog, _ ->
                     dialog.dismiss()
                 }
-                .setPositiveButton("确定") { dialog, which ->
+                .setPositiveButton("确定") { dialog, _ ->
                     chatViewModel.deleteChat(ChatViewModel.chatId!!)
                     chatViewModel.deleteMsgsOfChat(ChatViewModel.chatId!!)
                     chatViewModel.chatName = "ChatGPT"
@@ -306,7 +315,7 @@ class ChatActivity : AppCompatActivity() {
                 val clipboard =
                     ChatGPTClientApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(ClipData.newPlainText(null, msg.content))
-                Toasty.success(ChatGPTClientApplication.context, "复制回复成功", Toast.LENGTH_SHORT, true).show();
+                Toasty.success(ChatGPTClientApplication.context, "复制回复成功", Toast.LENGTH_SHORT, true).show()
             }
         }
     }

@@ -71,4 +71,5 @@ dependencies {
     implementation 'ru.noties:jlatexmath-android:0.2.0'
 
     implementation 'com.github.GrenderG:Toasty:1.5.2'
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 }

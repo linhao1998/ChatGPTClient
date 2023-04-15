@@ -20,7 +20,7 @@ class ChatAdapter(private val chatActivity: ChatActivity, private val chatList: 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_item,parent,false)
         val holder = ViewHolder(view)
         holder.itemView.setOnClickListener {
-            if (chatActivity.msgListViewModel.isSend) {
+            if (chatActivity.msgListViewModel.isSend.value == true) {
                 val position = holder.bindingAdapterPosition
                 val chat = chatList[position]
                 chatActivity.chatViewModel.chatName = chat.chatName
