@@ -1,6 +1,7 @@
 package com.example.chatgptclient.ui.chat
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.drawerlayout.widget.DrawerLayout
@@ -26,6 +28,7 @@ import com.example.chatgptclient.ui.chat.chatmain.MsgListViewModel
 import com.example.chatgptclient.ui.chat.chatmain.MsgAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.launch
 
 class ChatActivity : AppCompatActivity() {
@@ -191,7 +194,7 @@ class ChatActivity : AppCompatActivity() {
                            val lastItemBottom = lastItem?.bottom ?: 0
                            msgRecyclerView.scrollBy(0, lastItemBottom)
                        } else {
-                           Toast.makeText(ChatGPTClientApplication.context,"请求失败",Toast.LENGTH_SHORT).show()
+                           Toasty.error(ChatGPTClientApplication.context, "请求失败", Toast.LENGTH_SHORT, true).show();
                            result.exceptionOrNull()?.printStackTrace()
                        }
                    }
@@ -303,11 +306,7 @@ class ChatActivity : AppCompatActivity() {
                 val clipboard =
                     ChatGPTClientApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(ClipData.newPlainText(null, msg.content))
-                Toast.makeText(
-                    ChatGPTClientApplication.context,
-                    "复制回复成功",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toasty.success(ChatGPTClientApplication.context, "复制回复成功", Toast.LENGTH_SHORT, true).show();
             }
         }
     }
