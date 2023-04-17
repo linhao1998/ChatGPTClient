@@ -27,6 +27,10 @@ class ChatViewModel: ViewModel() {
 
     private val nonUpdateMsgListLiveData = MutableLiveData<Any?>()
 
+    private val clearAllChatsLiveData = MutableLiveData<Any?>()
+
+    private val clearAllMsgsLiveData = MutableLiveData<Any?>()
+
     private val nonUpdateMsgList = listOf(Msg("nonUpdateMsgList",Msg.TYPE_RECEIVED))
 
     var chatName = "ChatGPT"
@@ -65,6 +69,11 @@ class ChatViewModel: ViewModel() {
                 value = Repository.loadAllChats()
             }
         }
+        addSource(clearAllChatsLiveData) {
+            viewModelScope.launch {
+                value = Repository.loadAllChats()
+            }
+        }
     }
 
     val msgsLiveData = MediatorLiveData<Result<List<Msg>>>().apply {
@@ -77,6 +86,9 @@ class ChatViewModel: ViewModel() {
             value = Result.success(emptyList())
         }
         addSource(addMsgsOfNewChatLiveData) {
+            value = Result.success(emptyList())
+        }
+        addSource(clearAllMsgsLiveData) {
             value = Result.success(emptyList())
         }
         addSource(nonUpdateMsgListLiveData) {
@@ -139,6 +151,14 @@ class ChatViewModel: ViewModel() {
                 val msg = Msg(msgStr, Msg.TYPE_SENT, chatId)
                 Repository.addMsg(msg)
             }
+        }
+    }
+
+    fun clearAllChatsAndMsgs() {
+        viewModelScope.launch {
+            Repository.clearAllChatsAndMsgs()
+            clearAllChatsLiveData.value = clearAllChatsLiveData.value
+            clearAllMsgsLiveData.value = clearAllMsgsLiveData.value
         }
     }
 

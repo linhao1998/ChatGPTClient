@@ -1,6 +1,7 @@
 package com.example.chatgptclient.logic.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.chatgptclient.logic.model.Chat
@@ -19,5 +20,8 @@ interface ChatDao {
 
     @Query("delete from chats where id = :chatId")
     fun deleteChatByChatId(chatId: Long): Int
+
+    @Query("delete from chats")
+    fun deleteAllChats()
 
 }

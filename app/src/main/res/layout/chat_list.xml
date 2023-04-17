@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="10dp"
         android:layout_marginHorizontal="16dp"
+        android:paddingVertical="4dp"
         android:text="新增对话"
         android:textAllCaps="false"
-        android:textColor="?attr/colorPrimary"
         android:textSize="24sp"
         app:iconSize="30dp"
         app:cornerRadius="16dp"
@@ -26,6 +26,26 @@
         android:id="@+id/rv_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/addNewChatBtn"/>
+        android:layout_below="@id/addNewChatBtn"
+        android:layout_above="@id/clearAllChatsBtn"/>
+
+    <Button
+        style="?attr/materialButtonOutlinedStyle"
+        android:id="@+id/clearAllChatsBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_alignParentBottom="true"
+        android:paddingVertical="4dp"
+        android:text="清除所有对话"
+        android:textAllCaps="false"
+        android:textSize="24sp"
+        app:iconSize="26dp"
+        app:cornerRadius="16dp"
+        app:strokeWidth="2dp"
+        app:iconGravity="textStart"
+        app:icon="@drawable/ic_clear_24dp"/>
+
 
 </RelativeLayout>

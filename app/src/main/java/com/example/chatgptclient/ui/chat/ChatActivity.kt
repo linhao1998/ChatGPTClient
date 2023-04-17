@@ -37,6 +37,8 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var addNewChatBtn: Button
 
+    private lateinit var clearAllChatsBtn: Button
+
     private lateinit var msgAdapter: MsgAdapter
 
     private lateinit var chatAdapter: ChatAdapter
@@ -73,6 +75,7 @@ class ChatActivity : AppCompatActivity() {
         addNewChatBtn = findViewById(R.id.addNewChatBtn)
         textViewBg = findViewById(R.id.tv_bg)
         loadingIndicator = findViewById(R.id.loading)
+        clearAllChatsBtn = findViewById(R.id.clearAllChatsBtn)
 
         if (isDarkTheme()) {
             topAppBar.setNavigationIcon(R.drawable.ic_chat_dark)
@@ -136,26 +139,7 @@ class ChatActivity : AppCompatActivity() {
             }
         }
         sendMsg.setOnClickListener {
-            val sendMsgStr = editTextMsg.text.toString()
-            if (sendMsgStr.isNotEmpty() && msgListViewModel.isSend.value == true) {
-                val msg = Msg(sendMsgStr, Msg.TYPE_SENT, ChatViewModel.chatId)
-                if (ChatViewModel.chatId == null) {
-                    chatViewModel.isChatGPT = false
-                    chatViewModel.chatName = "New chat"
-                    topAppBar.title = chatViewModel.chatName
-                    msgRecyclerView.visibility = View.VISIBLE
-                    textViewBg.visibility = View.GONE
-                    chatViewModel.addNewChatAndMsg(sendMsgStr)
-                } else {
-                    chatViewModel.addMsg(msg)
-                }
-                msgListViewModel.isSend.value = false
-                MsgListViewModel.msgList.add(msg)
-                msgAdapter.notifyItemInserted(MsgListViewModel.msgList.size -1 )
-                msgRecyclerView.scrollToPosition(MsgListViewModel.msgList.size - 1)
-                editTextMsg.text.clear()
-                msgListViewModel.sendMessage(sendMsgStr)
-            }
+            sendMsg()
         }
         drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
@@ -171,15 +155,10 @@ class ChatActivity : AppCompatActivity() {
             override fun onDrawerStateChanged(newState: Int) {}
         })
         addNewChatBtn.setOnClickListener {
-            if (msgListViewModel.isSend.value == true) {
-                chatViewModel.isChatGPT = false
-                chatViewModel.chatName = "New chat"
-                topAppBar.title = chatViewModel.chatName
-                msgRecyclerView.visibility = View.VISIBLE
-                textViewBg.visibility = View.GONE
-                chatViewModel.addNewChat()
-                chatViewModel.addMsgsOfNewChat()
-            }
+            addNewChat()
+        }
+        clearAllChatsBtn.setOnClickListener {
+            clearAllChatsAndMsgs()
         }
 
         lifecycleScope.launch {
@@ -317,6 +296,71 @@ class ChatActivity : AppCompatActivity() {
                 clipboard.setPrimaryClip(ClipData.newPlainText(null, msg.content))
                 Toasty.success(ChatGPTClientApplication.context, "复制回复成功", Toast.LENGTH_SHORT, true).show()
             }
+        }
+    }
+
+    /**
+     * 清除所有对话
+     */
+    private fun clearAllChatsAndMsgs() {
+        if (msgListViewModel.isSend.value == true) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("清除所有对话？")
+                .setNegativeButton("取消") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton("确定") { dialog, _ ->
+                    chatViewModel.clearAllChatsAndMsgs()
+                    chatViewModel.chatName = "ChatGPT"
+                    topAppBar.title = chatViewModel.chatName
+                    msgRecyclerView.visibility = View.GONE
+                    textViewBg.visibility = View.VISIBLE
+                    chatViewModel.isChatGPT = true
+                    ChatViewModel.chatId = null
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+
+    /**
+     * 发送消息
+     */
+    private fun sendMsg() {
+        val sendMsgStr = editTextMsg.text.toString()
+        if (sendMsgStr.isNotEmpty() && msgListViewModel.isSend.value == true) {
+            val msg = Msg(sendMsgStr, Msg.TYPE_SENT, ChatViewModel.chatId)
+            if (ChatViewModel.chatId == null) {
+                chatViewModel.isChatGPT = false
+                chatViewModel.chatName = "New chat"
+                topAppBar.title = chatViewModel.chatName
+                msgRecyclerView.visibility = View.VISIBLE
+                textViewBg.visibility = View.GONE
+                chatViewModel.addNewChatAndMsg(sendMsgStr)
+            } else {
+                chatViewModel.addMsg(msg)
+            }
+            msgListViewModel.isSend.value = false
+            MsgListViewModel.msgList.add(msg)
+            msgAdapter.notifyItemInserted(MsgListViewModel.msgList.size -1 )
+            msgRecyclerView.scrollToPosition(MsgListViewModel.msgList.size - 1)
+            editTextMsg.text.clear()
+            msgListViewModel.sendMessage(sendMsgStr)
+        }
+    }
+
+    /**
+     * 新增对话
+     */
+    private fun addNewChat() {
+        if (msgListViewModel.isSend.value == true) {
+            chatViewModel.isChatGPT = false
+            chatViewModel.chatName = "New chat"
+            topAppBar.title = chatViewModel.chatName
+            msgRecyclerView.visibility = View.VISIBLE
+            textViewBg.visibility = View.GONE
+            chatViewModel.addNewChat()
+            chatViewModel.addMsgsOfNewChat()
         }
     }
 

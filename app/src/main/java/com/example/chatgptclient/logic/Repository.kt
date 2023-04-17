@@ -111,4 +111,17 @@ object Repository {
             Result.failure(e)
         }
     }
+
+    suspend fun clearAllChatsAndMsgs() {
+        try {
+            withContext(Dispatchers.IO) {
+                val deferredChats = async { chatDao.deleteAllChats() }
+                val deferredMessages = async { msgDao.deleteAllMessages() }
+                deferredChats.await()
+                deferredMessages.await()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

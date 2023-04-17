@@ -16,4 +16,7 @@ interface MsgDao {
 
     @Query("delete from messages where chatId = :chatId")
     fun deleteMessagesByChatId(chatId: Long): Int
+
+    @Query("delete from messages")
+    fun deleteAllMessages()
 }
