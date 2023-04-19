@@ -2,6 +2,14 @@
     <string name="app_name">ChatGPT</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
+    <string name="add_new_chat_btn">新增对话</string>
+    <string name="clear_conversations_btn">清除所有对话</string>
+    <string name="rename_et">请输入名称</string>
+    <string name="msg_left_tv_content_description">显示ChatGPT回复信息的TextView</string>
+    <string name="send_msg_et_hint">发送一条消息...</string>
+    <string name="send_msg_btn">发送</string>
+    <string name="bg_tv">ChatGPT</string>
+
     <string name="api_key">你的API key</string>
 
     <string name="font_size_title">字体大小</string>

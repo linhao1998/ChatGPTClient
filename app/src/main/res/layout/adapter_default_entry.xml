@@ -10,4 +10,5 @@
     android:paddingBottom="8dp"
     android:textColor="?attr/colorPrimary"
     android:textSize="?font2"
-    android:textIsSelectable="true"/>
+    android:textIsSelectable="true"
+    android:contentDescription="@string/msg_left_tv_content_description"/>
