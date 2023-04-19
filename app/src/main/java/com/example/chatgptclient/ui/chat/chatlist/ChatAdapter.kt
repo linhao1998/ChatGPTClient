@@ -28,7 +28,7 @@ class ChatAdapter(private val chatActivity: ChatActivity, private val chatList: 
                 ChatViewModel.chatId = chat.id
                 chatActivity.chatViewModel.isChatGPT = false
                 chatActivity.msgRecyclerView.visibility = View.VISIBLE
-                chatActivity.textViewBg.visibility = View.GONE
+                chatActivity.bgTextView.visibility = View.GONE
                 chatActivity.chatViewModel.loadMsgsOfChat(chat.id)
             }
         }

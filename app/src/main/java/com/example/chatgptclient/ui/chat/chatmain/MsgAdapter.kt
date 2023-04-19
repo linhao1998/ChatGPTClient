@@ -28,6 +28,7 @@ import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
 import com.example.chatgptclient.logic.model.Msg
 import com.example.chatgptclient.utils.Prism4jGrammarLocator
+import es.dmoral.toasty.Toasty
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
@@ -44,13 +45,13 @@ import io.noties.markwon.utils.LeadingMarginUtils
 import io.noties.prism4j.Prism4j
 import org.commonmark.node.FencedCodeBlock
 
-class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MsgAdapter(private val msgList: List<Msg>, textView: TextView): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val markwon = Markwon.builder(ChatGPTClientApplication.context)
         .usePlugin(MyPlugin())
         .usePlugin(LinkifyPlugin.create(Linkify.WEB_URLS))
         .usePlugin(MarkwonInlineParserPlugin.create())
-        .usePlugin(JLatexMathPlugin.create(44.toFloat(),MyJLatexMathPlugin()))
+        .usePlugin(JLatexMathPlugin.create(textView.textSize,MyJLatexMathPlugin()))
         .build()
 
     inner class LeftViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -133,7 +134,7 @@ class MsgAdapter(private val msgList: List<Msg>): RecyclerView.Adapter<RecyclerV
 
             val clipboard = ChatGPTClientApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText(null,contents))
-            Toast.makeText(ChatGPTClientApplication.context,"复制成功", Toast.LENGTH_SHORT).show()
+            Toasty.success(ChatGPTClientApplication.context, "复制成功", Toast.LENGTH_SHORT, true).show()
         }
 
         override fun updateDrawState(ds: TextPaint) {

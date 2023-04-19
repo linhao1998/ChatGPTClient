@@ -24,7 +24,7 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight"
                 app:title="ChatGPT"
                 app:menu="@menu/popup_menu"
-                app:navigationIcon="@drawable/ic_chat" />
+                app:navigationIcon="@drawable/ic_chat_24dp" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -104,6 +104,14 @@
         <include layout="@layout/chat_list"/>
 
     </FrameLayout>
+
+    <!--    不显示布局的TextVIew，仅用于传递字体大小-->
+    <TextView
+        android:id="@+id/tv_tem"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textSize="?font2"
+        android:visibility="gone"/>
 
 
 

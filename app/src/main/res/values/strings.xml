@@ -2,18 +2,14 @@
     <string name="app_name">ChatGPT</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="api_key">你的API key</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+    <string name="font_size_title">字体大小</string>
 
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="enable_continuous_conversation_title">开启连续对话功能</string>
+    <string name="summary_on">ChatGPT根据当前问题及前一问答进行回复，对之前的问答具有记忆功能</string>
+    <string name="summary_off">ChatGPT只根据当前问题进行回复，对之前的问答没有记忆功能</string>
+
+    <string name="temperature">模型参数temperature（默认为10）</string>
+    <string name="temp_summary">较高的值（如8）将使回复更加随机，而较低的值（如 2）将使回复更加集中和确定</string>
 </resources>

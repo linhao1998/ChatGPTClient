@@ -41,7 +41,7 @@
         android:text="清除所有对话"
         android:textAllCaps="false"
         android:textSize="24sp"
-        app:iconSize="26dp"
+        app:iconSize="30dp"
         app:cornerRadius="16dp"
         app:strokeWidth="2dp"
         app:iconGravity="textStart"

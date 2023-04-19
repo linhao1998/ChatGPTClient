@@ -1,0 +1,37 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        app:key="api_key"
+        app:title="@string/api_key"
+        app:useSimpleSummaryProvider="true"
+        app:iconSpaceReserved="false"/>
+
+    <SwitchPreferenceCompat
+        app:key="enable_continuous_conversation"
+        app:title="@string/enable_continuous_conversation_title"
+        app:summaryOff="@string/summary_off"
+        app:summaryOn="@string/summary_on"
+        app:iconSpaceReserved="false"/>
+
+    <ListPreference
+        app:entries="@array/font_size_entries"
+        app:entryValues="@array/font_size_values"
+        app:defaultValue="1"
+        app:key="font_size"
+        app:title="@string/font_size_title"
+        app:useSimpleSummaryProvider="true"
+        app:iconSpaceReserved="false"/>
+
+    <SeekBarPreference
+        app:key="temperature"
+        app:title="@string/temperature"
+        app:summary="@string/temp_summary"
+        app:defaultValue="10"
+        app:min="0"
+        android:max="20"
+        app:showSeekBarValue="true"
+        app:iconSpaceReserved="false"/>
+
+
+</PreferenceScreen>

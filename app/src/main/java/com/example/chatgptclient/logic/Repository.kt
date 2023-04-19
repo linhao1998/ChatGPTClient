@@ -1,5 +1,7 @@
 package com.example.chatgptclient.logic
 
+import android.util.Log
+import androidx.preference.PreferenceManager
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.model.ModelId
@@ -14,26 +16,68 @@ import kotlinx.coroutines.withContext
 
 object Repository {
 
-    private val apiKey: String = ""
+    private var apiKey = ChatGPTClientApplication.sharedPreferences.getString("api_key","") ?: ""
 
-    private val openAI = OpenAI(apiKey)
+    private var isMultiTurnCon = ChatGPTClientApplication.sharedPreferences.getBoolean("enable_continuous_conversation",false)
+
+    private var temInt: Int = ChatGPTClientApplication.sharedPreferences.getInt("temperature",10)
+
+    private var temDouble: Double = temInt.toDouble()/10
+
+    private var openAI = OpenAI(apiKey)
 
     private val chatDao = AppDatabase.getDatabase(ChatGPTClientApplication.context).chatDao()
 
     private val msgDao = AppDatabase.getDatabase(ChatGPTClientApplication.context).msgDao()
 
+    fun resetOpenAI(apiKey: String) {
+        openAI = OpenAI(apiKey)
+    }
+
+    fun resetIsMultiTurnCon(enable: Boolean) {
+        isMultiTurnCon = enable
+    }
+
+    fun resetTem(tem: Int) {
+        temDouble = tem.toDouble()/10
+    }
+
     @OptIn(BetaOpenAI::class)
-    fun getChatCompletions(contentStr: String): Flow<ChatCompletionChunk> {
-        val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId("gpt-3.5-turbo"),
-            messages = listOf(
-                ChatMessage(
-                    role = ChatRole.User,
-                    content = contentStr
-                )
+    fun getChatCompletions(contentStr: String, preUser: String, preAssistant: String): Flow<ChatCompletionChunk> {
+        val model = ModelId("gpt-3.5-turbo")
+        if (isMultiTurnCon) {
+            val chatCompletionRequest = ChatCompletionRequest(
+                model,
+                messages = listOf(
+                    ChatMessage(
+                        role = ChatRole.Assistant,
+                        content = preUser
+                    ),
+                    ChatMessage(
+                        role = ChatRole.Assistant,
+                        content = preAssistant
+                    ),
+                    ChatMessage(
+                        role = ChatRole.User,
+                        content = contentStr
+                    )
+                ),
+                temDouble
             )
-        )
-        return openAI.chatCompletions(chatCompletionRequest)
+            return openAI.chatCompletions(chatCompletionRequest)
+        } else {
+            val chatCompletionRequest = ChatCompletionRequest(
+                model,
+                messages = listOf(
+                    ChatMessage(
+                        role = ChatRole.User,
+                        content = contentStr
+                    )
+                ),
+                temDouble
+            )
+            return openAI.chatCompletions(chatCompletionRequest)
+        }
     }
 
     suspend fun addNewChat(chat: Chat): Result<Long> {

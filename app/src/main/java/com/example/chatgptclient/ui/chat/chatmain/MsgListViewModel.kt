@@ -36,7 +36,13 @@ class MsgListViewModel: ViewModel() {
     fun sendMessage(message: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                Repository.getChatCompletions(message)
+                var preUser = ""
+                var preAssistant = ""
+                if (msgList.size >=3 && msgList[msgList.size-2].type == Msg.TYPE_RECEIVED) {
+                    preAssistant = msgList[msgList.size-2].content
+                    preUser = msgList[msgList.size-3].content
+                }
+                Repository.getChatCompletions(message,preUser,preAssistant)
                     .catch { e ->
                         _msgContentResult.value = Result.failure(e)
                         isSend.postValue(true)

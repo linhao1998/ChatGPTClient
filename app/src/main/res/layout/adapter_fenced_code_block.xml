@@ -17,7 +17,7 @@
         android:lineSpacingExtra="2dp"
         android:paddingHorizontal="5dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="14sp"
+        android:textSize="?font1"
         android:background="@color/black"/>
 
 </HorizontalScrollView>

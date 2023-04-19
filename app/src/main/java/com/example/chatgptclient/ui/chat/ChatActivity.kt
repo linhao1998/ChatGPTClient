@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
@@ -23,6 +24,7 @@ import com.example.chatgptclient.ui.chat.chatlist.ChatAdapter
 import com.example.chatgptclient.ui.chat.chatlist.ChatListViewModel
 import com.example.chatgptclient.ui.chat.chatmain.MsgListViewModel
 import com.example.chatgptclient.ui.chat.chatmain.MsgAdapter
+import com.example.chatgptclient.ui.settings.SettingsActivity
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -47,9 +49,11 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var loadingIndicator: SpinKitView
 
+    private lateinit var temTextView: TextView
+
     lateinit var msgRecyclerView: RecyclerView
 
-    lateinit var textViewBg: TextView
+    lateinit var bgTextView: TextView
 
     lateinit var topAppBar: MaterialToolbar
 
@@ -64,6 +68,13 @@ class ChatActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        when (ChatGPTClientApplication.sharedPreferences.getString("font_size","1")) {
+            "0" -> setTheme(R.style.Default_TextSize_Small)
+            "1" -> setTheme(R.style.Default_TextSize_Middle)
+            "2" -> setTheme(R.style.Default_TextSize_Large)
+            "3" -> setTheme(R.style.Default_TextSize_XLarge)
+            else -> setTheme(R.style.Default_TextSize_Middle)
+        }
         setContentView(R.layout.activity_chat)
 
         topAppBar = findViewById(R.id.topAppBar)
@@ -73,22 +84,18 @@ class ChatActivity : AppCompatActivity() {
         msgRecyclerView = findViewById(R.id.rv_msg)
         chatRecyclerView = findViewById(R.id.rv_chat)
         addNewChatBtn = findViewById(R.id.addNewChatBtn)
-        textViewBg = findViewById(R.id.tv_bg)
+        bgTextView = findViewById(R.id.tv_bg)
         loadingIndicator = findViewById(R.id.loading)
         clearAllChatsBtn = findViewById(R.id.clearAllChatsBtn)
+        temTextView = findViewById(R.id.tv_tem)
 
-        if (isDarkTheme()) {
-            topAppBar.setNavigationIcon(R.drawable.ic_chat_dark)
-        } else {
-            topAppBar.setNavigationIcon(R.drawable.ic_chat)
-        }
         if (!chatViewModel.isChatGPT) {
             msgRecyclerView.visibility = View.VISIBLE
-            textViewBg.visibility = View.GONE
+            bgTextView.visibility = View.GONE
         }
 
         val msgLayoutManager = LinearLayoutManager(this)
-        msgAdapter = MsgAdapter(MsgListViewModel.msgList)
+        msgAdapter = MsgAdapter(MsgListViewModel.msgList,temTextView)
         msgRecyclerView.layoutManager = msgLayoutManager
         msgRecyclerView.adapter = msgAdapter
 
@@ -120,6 +127,10 @@ class ChatActivity : AppCompatActivity() {
                     true
                 }
                 R.id.settings -> {
+                    if (msgListViewModel.isSend.value == true) {
+                        val intent = Intent(this, SettingsActivity::class.java)
+                        startActivity(intent)
+                    }
                     true
                 }
                 else -> false
@@ -275,7 +286,7 @@ class ChatActivity : AppCompatActivity() {
                     chatViewModel.chatName = "ChatGPT"
                     topAppBar.title = chatViewModel.chatName
                     msgRecyclerView.visibility = View.GONE
-                    textViewBg.visibility = View.VISIBLE
+                    bgTextView.visibility = View.VISIBLE
                     chatViewModel.isChatGPT = true
                     ChatViewModel.chatId = null
                     dialog.dismiss()
@@ -314,7 +325,7 @@ class ChatActivity : AppCompatActivity() {
                     chatViewModel.chatName = "ChatGPT"
                     topAppBar.title = chatViewModel.chatName
                     msgRecyclerView.visibility = View.GONE
-                    textViewBg.visibility = View.VISIBLE
+                    bgTextView.visibility = View.VISIBLE
                     chatViewModel.isChatGPT = true
                     ChatViewModel.chatId = null
                     dialog.dismiss()
@@ -335,7 +346,7 @@ class ChatActivity : AppCompatActivity() {
                 chatViewModel.chatName = "New chat"
                 topAppBar.title = chatViewModel.chatName
                 msgRecyclerView.visibility = View.VISIBLE
-                textViewBg.visibility = View.GONE
+                bgTextView.visibility = View.GONE
                 chatViewModel.addNewChatAndMsg(sendMsgStr)
             } else {
                 chatViewModel.addMsg(msg)
@@ -358,7 +369,7 @@ class ChatActivity : AppCompatActivity() {
             chatViewModel.chatName = "New chat"
             topAppBar.title = chatViewModel.chatName
             msgRecyclerView.visibility = View.VISIBLE
-            textViewBg.visibility = View.GONE
+            bgTextView.visibility = View.GONE
             chatViewModel.addNewChat()
             chatViewModel.addMsgsOfNewChat()
         }
