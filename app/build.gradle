@@ -70,6 +70,7 @@ dependencies {
     implementation "io.noties.markwon:recycler:4.6.2"
     implementation "io.noties.markwon:ext-latex:4.6.2"
     implementation 'ru.noties:jlatexmath-android:0.2.0'
+    implementation 'com.github.linhao1998:Prism4jX:1.0.0'
 
     implementation 'com.github.GrenderG:Toasty:1.5.2'
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'

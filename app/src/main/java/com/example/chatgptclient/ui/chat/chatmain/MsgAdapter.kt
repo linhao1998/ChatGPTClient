@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
 import com.example.chatgptclient.logic.model.Msg
-import com.example.chatgptclient.utils.Prism4jGrammarLocator
+import com.linhaodev.prism4jx.Prism4jGrammarLocator
 import es.dmoral.toasty.Toasty
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
