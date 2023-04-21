@@ -5,8 +5,9 @@
 >项目持续完善中，欢迎使用反馈。
 
 ## 示例图片
-
-   <img src=".\images\0.jpg" style="width:24%;" /><img src=".\images\1.jpg" style="width:24%;" /><img src=".\images\2.jpg" style="width:24%;" /><img src=".\images\3.gif" style="width:24%;" />
+<p align="left">
+   <img src=".\images\0.jpg" style="width:250px;" /><img src=".\images\1.jpg" style="width:250px;" /><img src=".\images\2.jpg" style="width:250px;" /><img src=".\images\3.gif" style="width:250px;" />
+</p>
 
 ## 特性
 
