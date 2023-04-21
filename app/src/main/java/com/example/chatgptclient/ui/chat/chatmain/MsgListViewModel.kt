@@ -1,5 +1,6 @@
 package com.example.chatgptclient.ui.chat.chatmain
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -175,7 +176,8 @@ class ChatActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                msgListViewModel.msgContentResult.collect { result ->
-                   if (result != null && MsgListViewModel.msgList.size > 0) {
+                   if ((msgListViewModel.isSend.value == false || !chatViewModel.sendStateBeforeStop)
+                       && result != null && MsgListViewModel.msgList.size > 0) {
                        val msgContent = result.getOrNull()
                        if (msgContent != null) {
                            MsgListViewModel.msgList[MsgListViewModel.msgList.size - 1].content = msgContent
@@ -216,6 +218,7 @@ class ChatActivity : AppCompatActivity() {
             val msgs = result.getOrNull()
             if ( msgs != null ) {
                 if ((msgs.isNotEmpty() && msgs[0].content != "nonUpdateMsgList") || msgs.isEmpty()) {
+                    Log.d("linhao","22222")
                     MsgListViewModel.msgList.clear()
                     MsgListViewModel.msgList.addAll(msgs)
                     msgAdapter.notifyDataSetChanged()
@@ -230,9 +233,10 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         chatViewModel.nonUpdateMsgList()
+        chatViewModel.sendStateBeforeStop = msgListViewModel.isSend.value!!
     }
 
     /**

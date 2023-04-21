@@ -37,6 +37,8 @@ class ChatViewModel: ViewModel() {
 
     var isChatGPT = true
 
+    var sendStateBeforeStop = true
+
     companion object {
         var chatId:Long? = null
     }
