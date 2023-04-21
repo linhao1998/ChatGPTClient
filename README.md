@@ -23,7 +23,7 @@
 
 ## 使用说明
 
-1. 进入网站https://platform.openai.com/account/api-keys，界面如下：
+1. 进入网站https://platform.openai.com/account/api-keys ，界面如下：
 
 <img src=".\images\apikey.png" style="width:80%; float:left" />
 
