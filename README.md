@@ -6,7 +6,7 @@
 
 ## 示例图片
 <p align="left">
-   <img src=".\images\0.jpg" style="width:250px;" /><img src=".\images\1.jpg" style="width:250px;" /><img src=".\images\2.jpg" style="width:250px;" /><img src=".\images\3.gif" style="width:250px;" />
+   <img src=".\images\0.jpg" style="width:200px;" /><img src=".\images\1.jpg" style="width:200px;" /><img src=".\images\2.jpg" style="width:200px;" /><img src=".\images\3.gif" style="width:200px;" />
 </p>
 
 ## 特性
