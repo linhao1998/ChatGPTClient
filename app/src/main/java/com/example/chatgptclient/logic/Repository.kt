@@ -1,12 +1,11 @@
 package com.example.chatgptclient.logic
 
-import android.util.Log
-import androidx.preference.PreferenceManager
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.example.chatgptclient.ChatGPTClientApplication
+import com.example.chatgptclient.logic.dao.SettingsDao
 import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 import kotlinx.coroutines.Dispatchers
@@ -16,11 +15,11 @@ import kotlinx.coroutines.withContext
 
 object Repository {
 
-    private var apiKey = ChatGPTClientApplication.sharedPreferences.getString("api_key","") ?: ""
+    private var apiKey = SettingsDao.getApiKey()
 
-    private var isMultiTurnCon = ChatGPTClientApplication.sharedPreferences.getBoolean("enable_continuous_conversation",false)
+    private var isMultiTurnCon = SettingsDao.getIsMultiTurnCon()
 
-    private var temInt: Int = ChatGPTClientApplication.sharedPreferences.getInt("temperature",10)
+    private var temInt: Int = SettingsDao.getTemInt()
 
     private var temDouble: Double = temInt.toDouble()/10
 

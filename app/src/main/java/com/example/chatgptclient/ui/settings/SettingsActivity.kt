@@ -1,13 +1,12 @@
 package com.example.chatgptclient.ui.settings
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
-import com.example.chatgptclient.logic.Repository
 import com.google.android.material.appbar.MaterialToolbar
 import es.dmoral.toasty.Toasty
 
@@ -35,6 +34,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+
+        private val settingsViewModel by lazy { ViewModelProvider(this)[SettingsViewModel::class.java] }
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
@@ -44,18 +45,18 @@ class SettingsActivity : AppCompatActivity() {
             val temSeekBarPreference = findPreference<SeekBarPreference>("temperature")
 
             apiKeyEditTextPreference?.setOnPreferenceChangeListener { preference, newValue ->
-                Repository.resetOpenAI(newValue.toString())
+                settingsViewModel.resetOpenAI(newValue.toString())
                 true
             }
             enableSwitchPreferenceCompat?.setOnPreferenceChangeListener { preference, newValue ->
-                Repository.resetIsMultiTurnCon(newValue as Boolean)
+                settingsViewModel.resetIsMultiTurnCon(newValue as Boolean)
                 true
             }
             fontSizeListPreference?.setOnPreferenceChangeListener { preference, newValue ->
                 true
             }
             temSeekBarPreference?.setOnPreferenceChangeListener { preference, newValue ->
-                Repository.resetTem(newValue as Int)
+                settingsViewModel.resetTem(newValue as Int)
                 true
             }
 
