@@ -49,7 +49,7 @@ object Repository {
                 model,
                 messages = listOf(
                     ChatMessage(
-                        role = ChatRole.Assistant,
+                        role = ChatRole.User,
                         content = preUser
                     ),
                     ChatMessage(
