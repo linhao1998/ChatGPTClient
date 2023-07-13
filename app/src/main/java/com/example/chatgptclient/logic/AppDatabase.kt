@@ -9,7 +9,7 @@ import com.example.chatgptclient.logic.dao.MsgDao
 import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
 
-@Database(version = 1, entities = [Chat::class, Msg::class])
+@Database(version = 1, entities = [Chat::class, Msg::class], exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun chatDao(): ChatDao

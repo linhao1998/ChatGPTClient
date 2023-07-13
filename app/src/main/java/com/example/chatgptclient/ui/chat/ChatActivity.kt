@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -32,7 +31,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.launch
 
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : AppCompatActivity(){
 
     private lateinit var editTextMsg: EditText
 
@@ -96,7 +95,7 @@ class ChatActivity : AppCompatActivity() {
         }
 
         val msgLayoutManager = LinearLayoutManager(this)
-        msgAdapter = MsgAdapter(MsgListViewModel.msgList,temTextView)
+        msgAdapter = MsgAdapter(msgListViewModel.msgList,temTextView)
         msgRecyclerView.layoutManager = msgLayoutManager
         msgRecyclerView.adapter = msgAdapter
 
@@ -177,11 +176,11 @@ class ChatActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                msgListViewModel.msgContentResult.collect { result ->
                    if ((msgListViewModel.isSend.value == false || !chatViewModel.sendStateBeforeStop)
-                       && result != null && MsgListViewModel.msgList.size > 0) {
+                       && result != null && msgListViewModel.msgList.size > 0) {
                        val msgContent = result.getOrNull()
                        if (msgContent != null) {
-                           MsgListViewModel.msgList[MsgListViewModel.msgList.size - 1].content = msgContent
-                           msgAdapter.notifyItemChanged(MsgListViewModel.msgList.size - 1)
+                           msgListViewModel.msgList[msgListViewModel.msgList.size - 1].content = msgContent
+                           msgAdapter.notifyItemChanged(msgListViewModel.msgList.size - 1)
                            val lastVisibleItemPosition = msgLayoutManager.findLastVisibleItemPosition()
                            val lastItem = msgLayoutManager.findViewByPosition(lastVisibleItemPosition)
                            val lastItemBottom = lastItem?.bottom ?: 0
@@ -218,12 +217,11 @@ class ChatActivity : AppCompatActivity() {
             val msgs = result.getOrNull()
             if ( msgs != null ) {
                 if ((msgs.isNotEmpty() && msgs[0].content != "nonUpdateMsgList") || msgs.isEmpty()) {
-                    Log.d("linhao","22222")
-                    MsgListViewModel.msgList.clear()
-                    MsgListViewModel.msgList.addAll(msgs)
+                    msgListViewModel.msgList.clear()
+                    msgListViewModel.msgList.addAll(msgs)
                     msgAdapter.notifyDataSetChanged()
-                    if (MsgListViewModel.msgList.size > 0) {
-                        msgRecyclerView.scrollToPosition(MsgListViewModel.msgList.size - 1)
+                    if (msgListViewModel.msgList.size > 0) {
+                        msgRecyclerView.scrollToPosition(msgListViewModel.msgList.size - 1)
                     }
                     drawerLayout.closeDrawers()
                 }
@@ -264,7 +262,7 @@ class ChatActivity : AppCompatActivity() {
                     val text = editTextRename.text.toString()
                     chatViewModel.chatName = text
                     topAppBar.title = chatViewModel.chatName
-                    chatViewModel.renameChatName(ChatViewModel.chatId!!,chatViewModel.chatName)
+                    chatViewModel.renameChatName(ChatViewModel.curChatId!!,chatViewModel.chatName)
                     dialog.dismiss()
                 }
                 .show()
@@ -285,14 +283,14 @@ class ChatActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }
                 .setPositiveButton("确定") { dialog, _ ->
-                    chatViewModel.deleteChat(ChatViewModel.chatId!!)
-                    chatViewModel.deleteMsgsOfChat(ChatViewModel.chatId!!)
+                    chatViewModel.deleteChat(ChatViewModel.curChatId!!)
+                    chatViewModel.deleteMsgsOfChat(ChatViewModel.curChatId!!)
                     chatViewModel.chatName = "ChatGPT"
                     topAppBar.title = chatViewModel.chatName
                     msgRecyclerView.visibility = View.GONE
                     bgTextView.visibility = View.VISIBLE
                     chatViewModel.isChatGPT = true
-                    ChatViewModel.chatId = null
+                    ChatViewModel.curChatId = null
                     dialog.dismiss()
                 }
                 .show()
@@ -303,8 +301,8 @@ class ChatActivity : AppCompatActivity() {
      * 复制回复到剪切板
      */
     private fun copyResponse() {
-        if (MsgListViewModel.msgList.size >= 2) {
-            val msg = MsgListViewModel.msgList[MsgListViewModel.msgList.size-1]
+        if (msgListViewModel.msgList.size >= 2) {
+            val msg = msgListViewModel.msgList[msgListViewModel.msgList.size-1]
             if (msg.type == Msg.TYPE_RECEIVED) {
                 val clipboard =
                     ChatGPTClientApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -331,7 +329,7 @@ class ChatActivity : AppCompatActivity() {
                     msgRecyclerView.visibility = View.GONE
                     bgTextView.visibility = View.VISIBLE
                     chatViewModel.isChatGPT = true
-                    ChatViewModel.chatId = null
+                    ChatViewModel.curChatId = null
                     dialog.dismiss()
                 }
                 .show()
@@ -344,8 +342,8 @@ class ChatActivity : AppCompatActivity() {
     private fun sendMsg() {
         val sendMsgStr = editTextMsg.text.toString()
         if (sendMsgStr.isNotEmpty() && msgListViewModel.isSend.value == true) {
-            val msg = Msg(sendMsgStr, Msg.TYPE_SENT, ChatViewModel.chatId)
-            if (ChatViewModel.chatId == null) {
+            val msg = Msg(sendMsgStr, Msg.TYPE_SENT, ChatViewModel.curChatId)
+            if (ChatViewModel.curChatId == null) {
                 chatViewModel.isChatGPT = false
                 chatViewModel.chatName = "New chat"
                 topAppBar.title = chatViewModel.chatName
@@ -356,9 +354,9 @@ class ChatActivity : AppCompatActivity() {
                 chatViewModel.addMsg(msg)
             }
             msgListViewModel.isSend.value = false
-            MsgListViewModel.msgList.add(msg)
-            msgAdapter.notifyItemInserted(MsgListViewModel.msgList.size -1 )
-            msgRecyclerView.scrollToPosition(MsgListViewModel.msgList.size - 1)
+            msgListViewModel.msgList.add(msg)
+            msgAdapter.notifyItemInserted(msgListViewModel.msgList.size - 1)
+            msgRecyclerView.scrollToPosition(msgListViewModel.msgList.size - 1)
             editTextMsg.text.clear()
             msgListViewModel.sendMessage(sendMsgStr)
         }

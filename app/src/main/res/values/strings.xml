@@ -15,7 +15,7 @@
     <string name="font_size_title">字体大小</string>
 
     <string name="enable_continuous_conversation_title">开启连续对话功能</string>
-    <string name="summary_on">ChatGPT根据当前问题及前一问答进行回复，对之前的问答具有记忆功能</string>
+    <string name="summary_on">ChatGPT根据当前问题及历史问答进行回复，对之前的问答具有记忆功能</string>
     <string name="summary_off">ChatGPT只根据当前问题进行回复，对之前的问答没有记忆功能</string>
 
     <string name="temperature">模型参数temperature（默认为10）</string>

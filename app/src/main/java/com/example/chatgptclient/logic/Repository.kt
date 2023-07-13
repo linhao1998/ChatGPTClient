@@ -2,81 +2,79 @@ package com.example.chatgptclient.logic
 
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.*
+import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.aallam.openai.client.OpenAIConfig
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.logic.dao.SettingsDao
 import com.example.chatgptclient.logic.model.Chat
 import com.example.chatgptclient.logic.model.Msg
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.seconds
 
 object Repository {
 
-    private var apiKey = SettingsDao.getApiKey()
+    private var apiKey: String = ""
 
-    private var isMultiTurnCon = SettingsDao.getIsMultiTurnCon()
+    private var isMulTurnCon: Boolean = false
 
-    private var temInt: Int = SettingsDao.getTemInt()
+    private var temInt: Int = 10
 
-    private var temDouble: Double = temInt.toDouble()/10
+    private var temDouble: Double? = null
 
-    private var openAI = OpenAI(apiKey)
+    private var config: OpenAIConfig? = null
+
+    private var openAI: OpenAI? = null
 
     private val chatDao = AppDatabase.getDatabase(ChatGPTClientApplication.context).chatDao()
 
     private val msgDao = AppDatabase.getDatabase(ChatGPTClientApplication.context).msgDao()
 
-    fun resetOpenAI(apiKey: String) {
-        openAI = OpenAI(apiKey)
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    init {
+        scope.launch {
+            val deferredApiKey = async { SettingsDao.getApiKey() }
+            val deferredIsMulTurnCon = async { SettingsDao.getIsMultiTurnCon() }
+            val deferredTemInt = async { SettingsDao.getTemInt() }
+            apiKey = deferredApiKey.await()
+            isMulTurnCon = deferredIsMulTurnCon.await()
+            temInt = deferredTemInt.await()
+            temDouble = temInt.toDouble() / 10
+            config = OpenAIConfig(token = apiKey, timeout = Timeout(socket = 60.seconds))
+            openAI = OpenAI(config!!)
+        }
     }
 
-    fun resetIsMultiTurnCon(enable: Boolean) {
-        isMultiTurnCon = enable
+    fun setApiKey(apiKey: String) {
+        config = OpenAIConfig(token = apiKey, timeout = Timeout(socket = 60.seconds))
+        openAI = OpenAI(config!!)
     }
 
-    fun resetTem(tem: Int) {
+    fun setMulTurnCon(enable: Boolean) {
+        isMulTurnCon = enable
+    }
+
+    fun setTem(tem: Int) {
         temDouble = tem.toDouble()/10
     }
 
     @OptIn(BetaOpenAI::class)
-    fun getChatCompletions(contentStr: String, preUser: String, preAssistant: String): Flow<ChatCompletionChunk> {
+    fun getChatCompletions(sendMsgs: List<ChatMessage>): Flow<ChatCompletionChunk> {
         val model = ModelId("gpt-3.5-turbo")
-        if (isMultiTurnCon) {
-            val chatCompletionRequest = ChatCompletionRequest(
-                model,
-                messages = listOf(
-                    ChatMessage(
-                        role = ChatRole.User,
-                        content = preUser
-                    ),
-                    ChatMessage(
-                        role = ChatRole.Assistant,
-                        content = preAssistant
-                    ),
-                    ChatMessage(
-                        role = ChatRole.User,
-                        content = contentStr
-                    )
-                ),
-                temDouble
-            )
-            return openAI.chatCompletions(chatCompletionRequest)
+        val messages = if (isMulTurnCon) {
+            sendMsgs
         } else {
-            val chatCompletionRequest = ChatCompletionRequest(
-                model,
-                messages = listOf(
-                    ChatMessage(
-                        role = ChatRole.User,
-                        content = contentStr
-                    )
-                ),
-                temDouble
-            )
-            return openAI.chatCompletions(chatCompletionRequest)
+            listOf(sendMsgs.last())
         }
+        val chatCompletionRequest = ChatCompletionRequest(
+            model,
+            messages,
+            temDouble
+        )
+        return openAI!!.chatCompletions(chatCompletionRequest)
     }
 
     suspend fun addNewChat(chat: Chat): Result<Long> {
@@ -85,7 +83,7 @@ object Repository {
                 val num = async { chatDao.insertChat(chat) }.await()
                 Result.success(num)
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

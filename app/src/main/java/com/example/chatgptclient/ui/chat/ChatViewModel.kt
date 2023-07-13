@@ -40,13 +40,13 @@ class ChatViewModel: ViewModel() {
     var sendStateBeforeStop = true
 
     companion object {
-        var chatId:Long? = null
+        var curChatId: Long? = null
     }
 
     val chatsLiveData = MediatorLiveData<Result<List<Chat>>>().apply {
         addSource(addNewChatResultLiveData) { result ->
             if (result.isSuccess) {
-                chatId = result.getOrNull()
+                curChatId = result.getOrNull()
                 viewModelScope.launch {
                     value = Repository.loadAllChats()
                 }

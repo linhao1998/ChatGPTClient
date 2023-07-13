@@ -5,15 +5,15 @@ import com.example.chatgptclient.logic.Repository
 
 class SettingsViewModel: ViewModel() {
 
-    fun resetOpenAI(apiKey: String) {
-        Repository.resetOpenAI(apiKey)
+    fun setApiKey(apiKey: String) {
+        Repository.setApiKey(apiKey)
     }
 
-    fun resetIsMultiTurnCon(enable: Boolean) {
-        Repository.resetIsMultiTurnCon(enable)
+    fun setMulTurnCon(enable: Boolean) {
+        Repository.setMulTurnCon(enable)
     }
 
-    fun resetTem(tem: Int) {
-        Repository.resetTem(tem)
+    fun setTem(tem: Int) {
+        Repository.setTem(tem)
     }
 }

@@ -44,19 +44,19 @@ class SettingsActivity : AppCompatActivity() {
             val fontSizeListPreference = findPreference<ListPreference>("font_size")
             val temSeekBarPreference = findPreference<SeekBarPreference>("temperature")
 
-            apiKeyEditTextPreference?.setOnPreferenceChangeListener { preference, newValue ->
-                settingsViewModel.resetOpenAI(newValue.toString())
+            apiKeyEditTextPreference?.setOnPreferenceChangeListener { _, newValue ->
+                settingsViewModel.setApiKey(newValue.toString())
                 true
             }
-            enableSwitchPreferenceCompat?.setOnPreferenceChangeListener { preference, newValue ->
-                settingsViewModel.resetIsMultiTurnCon(newValue as Boolean)
+            enableSwitchPreferenceCompat?.setOnPreferenceChangeListener { _, newValue ->
+                settingsViewModel.setMulTurnCon(newValue as Boolean)
                 true
             }
-            fontSizeListPreference?.setOnPreferenceChangeListener { preference, newValue ->
+            fontSizeListPreference?.setOnPreferenceChangeListener { _, _ ->
                 true
             }
-            temSeekBarPreference?.setOnPreferenceChangeListener { preference, newValue ->
-                settingsViewModel.resetTem(newValue as Int)
+            temSeekBarPreference?.setOnPreferenceChangeListener { _, newValue ->
+                settingsViewModel.setTem(newValue as Int)
                 true
             }
 

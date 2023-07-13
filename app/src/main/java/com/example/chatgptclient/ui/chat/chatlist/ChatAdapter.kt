@@ -25,7 +25,7 @@ class ChatAdapter(private val chatActivity: ChatActivity, private val chatList: 
                 val chat = chatList[position]
                 chatActivity.chatViewModel.chatName = chat.chatName
                 chatActivity.topAppBar.title = chatActivity.chatViewModel.chatName
-                ChatViewModel.chatId = chat.id
+                ChatViewModel.curChatId = chat.id
                 chatActivity.chatViewModel.isChatGPT = false
                 chatActivity.msgRecyclerView.visibility = View.VISIBLE
                 chatActivity.bgTextView.visibility = View.GONE
