@@ -34,8 +34,10 @@ object Repository {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
+    private var job: Job? = null
+
     init {
-        scope.launch {
+        job = scope.launch {
             val deferredApiKey = async { SettingsDao.getApiKey() }
             val deferredIsMulTurnCon = async { SettingsDao.getIsMultiTurnCon() }
             val deferredTemInt = async { SettingsDao.getTemInt() }
@@ -46,6 +48,10 @@ object Repository {
             config = OpenAIConfig(token = apiKey, timeout = Timeout(socket = 60.seconds))
             openAI = OpenAI(config!!)
         }
+    }
+
+    fun closeScope() {
+        job?.cancel()
     }
 
     fun setApiKey(apiKey: String) {
