@@ -168,4 +168,8 @@ class ChatViewModel: ViewModel() {
         nonUpdateMsgListLiveData.value = nonUpdateMsgListLiveData.value
     }
 
+    fun closeScope() {
+        Repository.closeScope()
+    }
+
 }

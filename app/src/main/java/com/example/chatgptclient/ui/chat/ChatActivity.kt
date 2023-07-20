@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatgptclient.ChatGPTClientApplication
 import com.example.chatgptclient.R
-import com.example.chatgptclient.logic.Repository
 import com.example.chatgptclient.logic.model.Msg
 import com.example.chatgptclient.ui.chat.chatlist.ChatAdapter
 import com.example.chatgptclient.ui.chat.chatlist.ChatListViewModel
@@ -236,7 +235,7 @@ class ChatActivity : AppCompatActivity(){
         super.onStop()
         chatViewModel.nonUpdateMsgList()
         chatViewModel.sendStateBeforeStop = msgListViewModel.isSend.value!!
-        Repository.closeScope()
+        chatViewModel.closeScope()
     }
 
     /**
