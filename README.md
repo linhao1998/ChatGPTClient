@@ -19,7 +19,7 @@
 
 ## 下载
 
-#### Apk下载链接： [Apk下载链接](https://github.com/linhao1998/ChatGPTClient/releases/download/1.1.0/app-release.apk)
+#### Apk下载链接： [Apk下载链接](https://github.com/linhao1998/ChatGPTClient/releases/download/1.2.0/app-release.apk)
 
 ## 使用说明
 
