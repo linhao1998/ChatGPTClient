@@ -229,11 +229,17 @@ class ChatActivity : AppCompatActivity(){
                 result.exceptionOrNull()?.printStackTrace()
             }
         }
+        chatViewModel.toastLiveData.observe(this) { it ->
+            if (it != "") {
+                Toasty.error(ChatGPTClientApplication.context, it, Toast.LENGTH_SHORT, true).show()
+            }
+        }
     }
 
     override fun onStop() {
         super.onStop()
         chatViewModel.nonUpdateMsgList()
+        chatViewModel.clearToast()
         chatViewModel.sendStateBeforeStop = msgListViewModel.isSend.value!!
         chatViewModel.closeScope()
     }
@@ -284,8 +290,7 @@ class ChatActivity : AppCompatActivity(){
                     dialog.dismiss()
                 }
                 .setPositiveButton("确定") { dialog, _ ->
-                    chatViewModel.deleteChat(ChatViewModel.curChatId!!)
-                    chatViewModel.deleteMsgsOfChat(ChatViewModel.curChatId!!)
+                    chatViewModel.deleteChatAndMsgs(ChatViewModel.curChatId!!)
                     chatViewModel.chatName = "ChatGPT"
                     topAppBar.title = chatViewModel.chatName
                     msgRecyclerView.visibility = View.GONE
@@ -374,7 +379,6 @@ class ChatActivity : AppCompatActivity(){
             msgRecyclerView.visibility = View.VISIBLE
             bgTextView.visibility = View.GONE
             chatViewModel.addNewChat()
-            chatViewModel.addMsgsOfNewChat()
         }
     }
 

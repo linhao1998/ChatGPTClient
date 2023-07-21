@@ -1,5 +1,6 @@
 package com.example.chatgptclient.logic
 
+import androidx.lifecycle.liveData
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.http.Timeout
@@ -105,42 +106,36 @@ object Repository {
         }
     }
 
-    suspend fun deleteChat(chatId: Long): Result<Int> {
+    suspend fun deleteChatAndMsgs(chatId: Long): Result<Int> {
         return try {
             withContext(Dispatchers.IO) {
-                val num = async { chatDao.deleteChatByChatId(chatId) }.await()
-                Result.success(num)
+                val deferredChatNum = async { chatDao.deleteChatByChatId(chatId) }
+                val deferredMsgsNum = async { msgDao.deleteMessagesByChatId(chatId) }
+                deferredChatNum.await()
+                deferredMsgsNum.await()
+                Result.success(1)
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun loadAllChats(): Result<List<Chat>>{
-        return try {
-            withContext(Dispatchers.IO) {
+    fun loadAllChats() = liveData(Dispatchers.IO) {
+        val result = try {
+            coroutineScope {
                 val chatList = async { chatDao.loadAllChats() }.await()
                 Result.success(chatList)
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
+        emit(result)
     }
 
-    suspend fun addMsg(msg: Msg) {
-        try {
-            withContext(Dispatchers.IO) {
-                msgDao.insertMsg(msg)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    suspend fun deleteMsgsOfChat(chatId: Long): Result<Int> {
+    suspend fun addMsg(msg: Msg): Result<Long> {
         return try {
             withContext(Dispatchers.IO) {
-                val num = async { msgDao.deleteMessagesByChatId(chatId) }.await()
+                val num = msgDao.insertMsg(msg)
                 Result.success(num)
             }
         } catch (e: Exception) {
@@ -159,16 +154,17 @@ object Repository {
         }
     }
 
-    suspend fun clearAllChatsAndMsgs() {
-        try {
+    suspend fun clearAllChatsAndMsgs(): Result<Int> {
+        return try {
             withContext(Dispatchers.IO) {
                 val deferredChats = async { chatDao.deleteAllChats() }
                 val deferredMessages = async { msgDao.deleteAllMessages() }
                 deferredChats.await()
                 deferredMessages.await()
+                Result.success(1)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Result.failure(e)
         }
     }
 }
